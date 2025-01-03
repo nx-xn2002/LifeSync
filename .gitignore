@@ -1,0 +1,58 @@
+# React Native specific ignore rules
+node_modules/
+.expo/
+dist/
+web-build/
+.metro-health-check*
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+
+# Spring Boot specific ignore rules
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# Common IDE files
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+
+# NetBeans specific
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# OS-specific files
+.DS_Store
+
+# TypeScript files
+*.tsbuildinfo
+
+# Local environment files
+.env*.local
+.env*
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
