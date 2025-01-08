@@ -1,7 +1,8 @@
 package com.nx.lifesyncbackend.service;
 
-import com.nx.lifesyncbackend.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.nx.lifesyncbackend.common.BaseResponse;
+import com.nx.lifesyncbackend.domain.User;
 
 /**
  * user service
@@ -11,4 +12,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserService extends IService<User> {
 
+    /**
+     * register
+     *
+     * @param user user
+     * @return {@link BaseResponse }<{@link ? }>
+     */
+    User register(User user);
 }
