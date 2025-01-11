@@ -31,9 +31,11 @@ public class LifeSyncBackendApplication {
                         ----------------------------------------------------------
                         \tApplication '{}' is running! Access URLs:
                         \tDoc: \thttp://{}:{}/doc.html
+                        \tDoc: \thttp://localhost:{}/doc.html
                         ----------------------------------------------------------""",
                 env.getProperty("spring.application.name"),
                 InetAddress.getLocalHost().getHostAddress(),
+                env.getProperty("server.port"),
                 env.getProperty("server.port"));
     }
 
