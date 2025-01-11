@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nx.lifesyncbackend.mapper.DetectionRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.nx.lifesyncbackend.domain.DetectionRecord">
+            <id property="recordId" column="record_id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="systolicBp" column="systolic_bp" jdbcType="SMALLINT"/>
+            <result property="diastolicBp" column="diastolic_bp" jdbcType="SMALLINT"/>
+            <result property="heartRate" column="heart_rate" jdbcType="SMALLINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="isDeleted" column="is_deleted" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        record_id,user_id,systolic_bp,
+        diastolic_bp,heart_rate,create_time,
+        update_time,is_deleted
+    </sql>
+</mapper>
