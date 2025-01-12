@@ -19,7 +19,7 @@ public interface UserService extends IService<User> {
      * @param user user
      * @return {@link BaseResponse }<{@link ? }>
      */
-    User register(User user);
+    Boolean register(User user);
 
     /**
      * login

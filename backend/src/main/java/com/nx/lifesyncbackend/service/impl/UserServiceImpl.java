@@ -27,7 +27,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         implements UserService {
 
     @Override
-    public User register(User user) {
+    public Boolean register(User user) {
         String username = user.getUsername();
         String password = user.getPassword();
         String email = user.getEmail();
@@ -54,7 +54,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "Register failed, database error");
             }
             log.info("Attempting to register user: {}", username);
-            return this.baseMapper.selectOne(queryWrapper);
+            return true;
         }
     }
 

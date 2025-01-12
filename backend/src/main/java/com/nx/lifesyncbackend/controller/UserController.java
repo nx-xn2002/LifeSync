@@ -27,11 +27,11 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public BaseResponse<User> register(@RequestBody User user) {
+    public BaseResponse<Boolean> register(@RequestBody User user) {
         if (user == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User result = userService.register(user);
+        Boolean result = userService.register(user);
         return ResultUtils.success(result);
     }
 
@@ -40,7 +40,7 @@ public class UserController {
         if (user == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User result = userService.login(user,request);
+        User result = userService.login(user, request);
         return ResultUtils.success(result);
     }
 }
