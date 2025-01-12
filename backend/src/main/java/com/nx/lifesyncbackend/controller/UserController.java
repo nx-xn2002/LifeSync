@@ -1,6 +1,5 @@
 package com.nx.lifesyncbackend.controller;
 
-import cn.hutool.http.server.HttpServerRequest;
 import com.nx.lifesyncbackend.common.BaseResponse;
 import com.nx.lifesyncbackend.common.ErrorCode;
 import com.nx.lifesyncbackend.common.utils.ResultUtils;

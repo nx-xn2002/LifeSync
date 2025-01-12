@@ -29,4 +29,12 @@ public interface UserService extends IService<User> {
      * @return {@link User }
      */
     User login(User user, HttpServletRequest request);
+
+    /**
+     * get login user
+     *
+     * @param request request
+     * @return {@link User }
+     */
+    User getLoginUser(HttpServletRequest request);
 }

@@ -71,8 +71,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             log.info("Login failed with username[{}]", user.getUsername());
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "User is not existed or wrong password");
         }
-        request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
+        request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, loginUser);
         return user;
+    }
+
+    @Override
+    public User getLoginUser(HttpServletRequest request) {
+        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        User currentUser = (User) userObj;
+        if (currentUser == null || currentUser.getId() == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        long userId = currentUser.getId();
+        currentUser = this.getById(userId);
+        if (currentUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        return currentUser;
     }
 }
 
