@@ -2,6 +2,7 @@ package com.nx.lifesyncbackend.service;
 
 import com.nx.lifesyncbackend.domain.BasicHealth;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.nx.lifesyncbackend.domain.User;
 
 /**
  * basic health service
@@ -11,4 +12,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface BasicHealthService extends IService<BasicHealth> {
 
+    /**
+     * select basic health
+     *
+     * @param loginUser login user
+     * @return {@link BasicHealth }
+     */
+    BasicHealth selectBasicHealth(User loginUser);
 }
