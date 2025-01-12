@@ -22,19 +22,4 @@ public class PasswordUtils {
     public static String encode(String strToEncode) {
         return SecureUtil.md5(strToEncode + salt);
     }
-
-    /**
-     * equals
-     *
-     * @param encoded encoded
-     * @param str     str
-     * @return boolean
-     * @author Ni Xiang
-     */
-    public static boolean equals(String encoded, String str) {
-        if (str == null || encoded == null) {
-            return false;
-        }
-        return encoded.equals(encode(str));
-    }
 }

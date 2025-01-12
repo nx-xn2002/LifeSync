@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nx.lifesyncbackend.common.ErrorCode;
 import com.nx.lifesyncbackend.common.utils.CheckUtils;
 import com.nx.lifesyncbackend.common.utils.PasswordUtils;
+import com.nx.lifesyncbackend.constant.UserConstant;
 import com.nx.lifesyncbackend.domain.User;
 import com.nx.lifesyncbackend.exception.BusinessException;
 import com.nx.lifesyncbackend.mapper.UserMapper;
 import com.nx.lifesyncbackend.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -54,6 +56,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             log.info("Attempting to register user: {}", username);
             return this.baseMapper.selectOne(queryWrapper);
         }
+    }
+
+    @Override
+    public User login(User user, HttpServletRequest request) {
+        if (user.getUsername() == null || user.getPassword() == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "Username or password can't be null");
+        }
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username", user.getUsername());
+        queryWrapper.eq("password", PasswordUtils.encode(user.getPassword()));
+        User loginUser = this.baseMapper.selectOne(queryWrapper);
+        if (loginUser == null) {
+            log.info("Login failed with username[{}]", user.getUsername());
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "User is not existed or wrong password");
+        }
+        request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
+        return user;
     }
 }
 
