@@ -18,5 +18,14 @@ public interface BasicHealthService extends IService<BasicHealth> {
      * @param loginUser login user
      * @return {@link BasicHealth }
      */
-    BasicHealth selectBasicHealth(User loginUser);
+    BasicHealth select(User loginUser);
+
+    /**
+     * update by login user
+     *
+     * @param basicHealth basic health
+     * @param loginUser   login user
+     * @return {@link Boolean }
+     */
+    Boolean updateByLoginUser(BasicHealth basicHealth, User loginUser);
 }

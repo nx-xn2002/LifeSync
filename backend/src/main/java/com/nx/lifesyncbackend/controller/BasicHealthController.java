@@ -27,6 +27,12 @@ public class BasicHealthController {
     @GetMapping("/select")
     public BaseResponse<BasicHealth> selectBasicHealth(HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
-        return ResultUtils.success(basicHealthService.selectBasicHealth(loginUser));
+        return ResultUtils.success(basicHealthService.select(loginUser));
+    }
+
+    @PostMapping("/update")
+    public BaseResponse<Boolean> updateBasicHealth(@RequestBody BasicHealth basicHealth, HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        return ResultUtils.success(basicHealthService.updateByLoginUser(basicHealth,loginUser));
     }
 }

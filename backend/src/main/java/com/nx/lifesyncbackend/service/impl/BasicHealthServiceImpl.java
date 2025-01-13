@@ -9,6 +9,7 @@ import com.nx.lifesyncbackend.exception.BusinessException;
 import com.nx.lifesyncbackend.service.BasicHealthService;
 import com.nx.lifesyncbackend.mapper.BasicHealthMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * basic health service impl
@@ -21,7 +22,7 @@ public class BasicHealthServiceImpl extends ServiceImpl<BasicHealthMapper, Basic
         implements BasicHealthService {
 
     @Override
-    public BasicHealth selectBasicHealth(User loginUser) {
+    public BasicHealth select(User loginUser) {
         if (loginUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN, "Please Login First");
         }
@@ -35,6 +36,23 @@ public class BasicHealthServiceImpl extends ServiceImpl<BasicHealthMapper, Basic
             return newBasicHealth;
         }
         return basicHealth;
+    }
+
+    @Override
+    public Boolean updateByLoginUser(BasicHealth basicHealth, User loginUser) {
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN, "Please Login First");
+        }
+        QueryWrapper<BasicHealth> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", loginUser.getId());
+        BasicHealth health = this.baseMapper.selectOne(queryWrapper);
+        basicHealth.setHealthId(health.getHealthId());
+        basicHealth.setUserId(loginUser.getId());
+        boolean b = updateById(basicHealth);
+        if (!b) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "Failed to update");
+        }
+        return true;
     }
 }
 
