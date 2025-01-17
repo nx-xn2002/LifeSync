@@ -8,10 +8,7 @@ import com.nx.lifesyncbackend.exception.BusinessException;
 import com.nx.lifesyncbackend.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * user controller
@@ -41,5 +38,14 @@ public class UserController {
         }
         User result = userService.login(user, request);
         return ResultUtils.success(result);
+    }
+
+    @GetMapping("/loginUser")
+    public BaseResponse<User> getLoginUser(HttpServletRequest request) {
+        if (request == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        User loginUser = userService.getLoginUser(request);
+        return ResultUtils.success(loginUser);
     }
 }
