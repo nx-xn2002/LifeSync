@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import {useContext, useState} from "react";
 import {AuthContext, AuthProvider} from "../context/AuthContext";
+import apiClient from "../utils/axios";
 
 export default function LoginScreen({navigation}) {
     const [username, setUsername] = useState('');
@@ -34,6 +35,11 @@ export default function LoginScreen({navigation}) {
         if (validateForm()) {
             try {
                 await storeUser({username, password});
+                const response = await apiClient.post('/user/login', {
+                    username,
+                    password,
+                });
+                console.log('Login successful:', JSON.stringify(response.data));
                 setErrors({});
                 setUsername("");
                 setPassword("");
