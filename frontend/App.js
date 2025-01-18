@@ -7,12 +7,32 @@ import ProfileScreen from "./screens/ProfileScreen";
 import {FontAwesome6, Ionicons} from "@expo/vector-icons";
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LoginScreen from "./screens/LoginScreen";
+import {useEffect} from "react";
+import {Alert, BackHandler} from "react-native";
 
 const MainTabs = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 // Tab 导航器
 function MainTabsNavigator() {
+    useEffect(() => {
+        const backAction = () => {
+            Alert.alert('Exit App', 'Do you want to exit the app?', [
+                {
+                    text: 'Cancel',
+                    onPress: () => null,
+                    style: 'cancel',
+                },
+                {
+                    text: 'Yes',
+                    onPress: () => BackHandler.exitApp(),
+                },
+            ]);
+            return true; // 阻止默认行为
+        };
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+        return () => backHandler.remove();
+    }, []);
     return (
         <MainTabs.Navigator initialRouteName="Monitor" id="1">
             <MainTabs.Screen

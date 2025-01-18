@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     },
     form: {
         backgroundColor: 'white',
+        margin: 16,
         padding: 20,
         borderRadius: 10,
         shadowColor: 'black',
