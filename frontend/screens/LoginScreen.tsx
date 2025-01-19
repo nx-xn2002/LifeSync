@@ -10,17 +10,19 @@ import {
     StatusBar
 } from 'react-native';
 import {useContext, useState} from "react";
+import type {BottomTabNavigationHelpers} from "@react-navigation/bottom-tabs/src/types";
 import {AuthContext, AuthProvider} from "../context/AuthContext";
 import apiClient from "../utils/axios";
 
-export default function LoginScreen({navigation}) {
+
+export default function LoginScreen({navigation}: { navigation: BottomTabNavigationHelpers }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState<ERROR.RegisterError>({});
     const {storeUser} = useContext(AuthContext);
 
     const validateForm = () => {
-        let errors = {};
+        setErrors({})
         if (!username) {
             errors.username = 'Username is required';
         }

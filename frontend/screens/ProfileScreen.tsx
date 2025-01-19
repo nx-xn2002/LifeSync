@@ -1,8 +1,10 @@
 import {Pressable, SafeAreaView, StyleSheet, Text, View} from "react-native";
-import {AuthContext} from "../context/AuthContext";
 import {useContext, useEffect} from "react";
 
-export default function ProfileScreen({navigation}) {
+import type {BottomTabNavigationHelpers} from "@react-navigation/bottom-tabs/src/types";
+import {AuthContext} from "../context/AuthContext";
+
+export default function ProfileScreen({navigation}: { navigation: BottomTabNavigationHelpers }) {
     const {user, storeUser} = useContext(AuthContext);
     const userLogout = () => {
         user.username = ''
@@ -30,7 +32,7 @@ export default function ProfileScreen({navigation}) {
                         </>
                     ) : (
                         <View style={styles.infoCard}>
-                            <Text style={styles.name}>访客账号</Text>
+                            <Text style={styles.title}>访客账号</Text>
                         </View>
                     )
             }

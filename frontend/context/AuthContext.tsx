@@ -1,12 +1,23 @@
-import React, {createContext, useState, useEffect} from 'react';
+import React, {createContext, useState, useEffect, ReactNode} from 'react';
 import * as SecureStore from 'expo-secure-store';
 import {Platform} from 'react-native';
 
-// 创建 Context
-export const AuthContext = createContext();
+// 定义 AuthContext 的值类型
+interface AuthContextType {
+    user: USER.UserInfo;
+    storeUser: (newUser: USER.UserInfo) => Promise<void>;
+    clearUser: () => Promise<void>;
+}
 
-export const AuthProvider = ({children}) => {
-    const [user, setUser] = useState({
+// 创建 Context
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+interface AuthProviderProps {
+    children: ReactNode;
+}
+
+export const AuthProvider = ({children}: AuthProviderProps) => {
+    const [user, setUser] = useState<USER.UserInfo>({
         username: '',
         password: '',
         email: '',
@@ -30,44 +41,41 @@ export const AuthProvider = ({children}) => {
     }, []);
 
     // 存储用户信息到 SecureStore
-    const storeUser = async (newUser) => {
+    const storeUser = async (newUser: USER.UserInfo) => {
         try {
-            // 合并旧的用户信息和新的用户信息，只替换非空字段
             const updatedUser = {
-                ...user,  // 保留原来的字段
+                ...user,
                 ...Object.fromEntries(
                     Object.entries(newUser).map(([key, value]) =>
-                        value !== undefined && value !== '' ? [key, value] : [key, user[key]]
+                        value !== undefined && value !== '' ? [key, value] : [key, user[key as keyof USER.UserInfo]]
                     )
                 ),
             };
 
-            // 保存更新后的用户信息
             if (Platform.OS === 'web') {
-                localStorage.setItem('user', JSON.stringify(updatedUser));  // Web环境使用localStorage
+                localStorage.setItem('user', JSON.stringify(updatedUser));
             } else {
-                await SecureStore.setItemAsync('user', JSON.stringify(updatedUser));  // 非Web环境使用expo-secure-store
+                await SecureStore.setItemAsync('user', JSON.stringify(updatedUser));
             }
 
-            setUser(updatedUser);  // 更新状态
+            setUser(updatedUser);
         } catch (error) {
-            console.error('Error storing user:', error);  // 捕捉错误
+            console.error('Error storing user:', error);
         }
     };
 
     // 清除用户信息
     const clearUser = async () => {
         if (Platform.OS === 'web') {
-            localStorage.removeItem('user');  // Web环境使用localStorage
+            localStorage.removeItem('user');
         } else {
-            await SecureStore.deleteItemAsync('user');  // 非Web环境使用expo-secure-store
+            await SecureStore.deleteItemAsync('user');
         }
         setUser({
             username: '',
             password: '',
             email: '',
-            baseInfo: {}
-        });  // 清空用户信息
+        });
     };
 
     return (

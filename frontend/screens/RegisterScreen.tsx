@@ -1,24 +1,24 @@
 import {
     Button,
-    Image,
     KeyboardAvoidingView,
+    Platform,
     SafeAreaView,
     StyleSheet,
     Text,
     TextInput,
     View,
-    Platform
+    StatusBar
 } from 'react-native';
 import {useState} from "react";
-import {StatusBar} from "expo-status-bar";
+import Constants from "expo-constants/src/Constants";
 
 export default function RegisterScreen() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState<ERROR.RegisterError>({});
 
     const validateForm = () => {
-        let errors = {};
+        setErrors({});
         if (!username) {
             errors.username = 'Username is required';
         }

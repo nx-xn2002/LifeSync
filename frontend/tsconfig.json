@@ -1,0 +1,9 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "baseUrl": ".", // 设置基础路径为项目根目录
+//    "paths": {
+//      "@/*": ["src/*"] // 设定别名，假设你的代码在 `src` 文件夹下
+//    }
+  }
+}
