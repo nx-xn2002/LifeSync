@@ -1,60 +1,64 @@
-package com.nx.lifesyncbackend.domain;
+package com.nx.lifesyncbackend.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
-
-import java.util.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
- * 用户信息表
+ * detection record
  *
  * @author nx-xn2002
- * @date 2025-01-04
+ * @date 2025-01-11
  */
-@TableName(value = "user")
+@TableName(value = "detection_record")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class DetectionRecord {
     /**
-     * 用户 id
+     * record id
      */
     @TableId(type = IdType.AUTO)
-    private Long id;
+    private Long recordId;
 
     /**
-     * 用户名
+     * user id
      */
-    private String username;
+    private Long userId;
 
     /**
-     * 用户密码
+     * systolic blood pressure value(mmHg)
      */
-    private String password;
+    private Integer systolicBp;
 
     /**
-     * 用户邮箱
+     * diastolic blood pressure value(mmHg)
      */
-    private String email;
+    private Integer diastolicBp;
 
     /**
-     * 创建时间
+     * heart rate(BPM)
+     */
+    private Integer heartRate;
+
+    /**
+     * create time
      */
     private Date createTime;
 
     /**
-     * 更新时间
+     * update time
      */
     private Date updateTime;
 
     /**
-     * 逻辑删除 0 - 未删除
+     * logic delete 0 - not deleted
      */
     @TableLogic
     private Integer isDeleted;

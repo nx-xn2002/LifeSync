@@ -3,7 +3,7 @@ package com.nx.lifesyncbackend.controller;
 import com.nx.lifesyncbackend.common.BaseResponse;
 import com.nx.lifesyncbackend.common.ErrorCode;
 import com.nx.lifesyncbackend.common.utils.ResultUtils;
-import com.nx.lifesyncbackend.domain.User;
+import com.nx.lifesyncbackend.model.entity.User;
 import com.nx.lifesyncbackend.exception.BusinessException;
 import com.nx.lifesyncbackend.service.UserService;
 import jakarta.annotation.Resource;

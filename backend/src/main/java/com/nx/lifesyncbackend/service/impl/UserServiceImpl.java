@@ -6,7 +6,7 @@ import com.nx.lifesyncbackend.common.ErrorCode;
 import com.nx.lifesyncbackend.common.utils.CheckUtils;
 import com.nx.lifesyncbackend.common.utils.PasswordUtils;
 import com.nx.lifesyncbackend.constant.UserConstant;
-import com.nx.lifesyncbackend.domain.User;
+import com.nx.lifesyncbackend.model.entity.User;
 import com.nx.lifesyncbackend.exception.BusinessException;
 import com.nx.lifesyncbackend.mapper.UserMapper;
 import com.nx.lifesyncbackend.service.UserService;

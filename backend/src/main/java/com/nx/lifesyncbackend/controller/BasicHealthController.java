@@ -2,8 +2,8 @@ package com.nx.lifesyncbackend.controller;
 
 import com.nx.lifesyncbackend.common.BaseResponse;
 import com.nx.lifesyncbackend.common.utils.ResultUtils;
-import com.nx.lifesyncbackend.domain.BasicHealth;
-import com.nx.lifesyncbackend.domain.User;
+import com.nx.lifesyncbackend.model.entity.BasicHealth;
+import com.nx.lifesyncbackend.model.entity.User;
 import com.nx.lifesyncbackend.service.BasicHealthService;
 import com.nx.lifesyncbackend.service.UserService;
 import jakarta.annotation.Resource;

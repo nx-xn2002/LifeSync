@@ -1,31 +1,32 @@
-package com.nx.lifesyncbackend.domain;
+package com.nx.lifesyncbackend.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import java.math.BigDecimal;
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 /**
- * detection record
+ * basic_health
  *
  * @author nx-xn2002
  * @date 2025-01-11
  */
-@TableName(value = "detection_record")
+@TableName(value ="basic_health")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DetectionRecord {
+public class BasicHealth {
     /**
-     * record id
+     * basic health id
      */
     @TableId(type = IdType.AUTO)
-    private Long recordId;
+    private Long healthId;
 
     /**
      * user id
@@ -33,19 +34,24 @@ public class DetectionRecord {
     private Long userId;
 
     /**
-     * systolic blood pressure value(mmHg)
+     * height(cm)
      */
-    private Integer systolicBp;
+    private Integer height;
 
     /**
-     * diastolic blood pressure value(mmHg)
+     * weight(m)
      */
-    private Integer diastolicBp;
+    private BigDecimal weight;
 
     /**
-     * heart rate(BPM)
+     * age
      */
-    private Integer heartRate;
+    private Integer age;
+
+    /**
+     * gender 0 - female, 1 - male, 2 - secret
+     */
+    private Integer gender;
 
     /**
      * create time

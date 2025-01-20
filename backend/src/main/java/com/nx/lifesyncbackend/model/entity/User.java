@@ -1,10 +1,10 @@
-package com.nx.lifesyncbackend.domain;
+package com.nx.lifesyncbackend.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.math.BigDecimal;
+
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -12,59 +12,49 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * basic_health
+ * 用户信息表
  *
  * @author nx-xn2002
- * @date 2025-01-11
+ * @date 2025-01-04
  */
-@TableName(value ="basic_health")
+@TableName(value = "user")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BasicHealth {
+public class User {
     /**
-     * basic health id
+     * 用户 id
      */
     @TableId(type = IdType.AUTO)
-    private Long healthId;
+    private Long id;
 
     /**
-     * user id
+     * 用户名
      */
-    private Long userId;
+    private String username;
 
     /**
-     * height(cm)
+     * 用户密码
      */
-    private Integer height;
+    private String password;
 
     /**
-     * weight(m)
+     * 用户邮箱
      */
-    private BigDecimal weight;
+    private String email;
 
     /**
-     * age
-     */
-    private Integer age;
-
-    /**
-     * gender 0 - female, 1 - male, 2 - secret
-     */
-    private Integer gender;
-
-    /**
-     * create time
+     * 创建时间
      */
     private Date createTime;
 
     /**
-     * update time
+     * 更新时间
      */
     private Date updateTime;
 
     /**
-     * logic delete 0 - not deleted
+     * 逻辑删除 0 - 未删除
      */
     @TableLogic
     private Integer isDeleted;

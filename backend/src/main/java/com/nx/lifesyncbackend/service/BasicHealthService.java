@@ -1,8 +1,8 @@
 package com.nx.lifesyncbackend.service;
 
-import com.nx.lifesyncbackend.domain.BasicHealth;
+import com.nx.lifesyncbackend.model.entity.BasicHealth;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.nx.lifesyncbackend.domain.User;
+import com.nx.lifesyncbackend.model.entity.User;
 
 /**
  * basic health service

@@ -1,6 +1,6 @@
 package com.nx.lifesyncbackend.mapper;
 
-import com.nx.lifesyncbackend.domain.DetectionRecord;
+import com.nx.lifesyncbackend.model.entity.DetectionRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

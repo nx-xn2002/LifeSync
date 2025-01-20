@@ -2,7 +2,7 @@ package com.nx.lifesyncbackend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.nx.lifesyncbackend.common.BaseResponse;
-import com.nx.lifesyncbackend.domain.User;
+import com.nx.lifesyncbackend.model.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**

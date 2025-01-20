@@ -1,6 +1,6 @@
 package com.nx.lifesyncbackend.mapper;
 
-import com.nx.lifesyncbackend.domain.User;
+import com.nx.lifesyncbackend.model.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

@@ -3,13 +3,12 @@ package com.nx.lifesyncbackend.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nx.lifesyncbackend.common.ErrorCode;
-import com.nx.lifesyncbackend.domain.BasicHealth;
-import com.nx.lifesyncbackend.domain.User;
+import com.nx.lifesyncbackend.model.entity.BasicHealth;
+import com.nx.lifesyncbackend.model.entity.User;
 import com.nx.lifesyncbackend.exception.BusinessException;
 import com.nx.lifesyncbackend.service.BasicHealthService;
 import com.nx.lifesyncbackend.mapper.BasicHealthMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * basic health service impl

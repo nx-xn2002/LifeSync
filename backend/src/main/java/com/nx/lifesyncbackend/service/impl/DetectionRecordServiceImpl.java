@@ -1,7 +1,7 @@
 package com.nx.lifesyncbackend.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.nx.lifesyncbackend.domain.DetectionRecord;
+import com.nx.lifesyncbackend.model.entity.DetectionRecord;
 import com.nx.lifesyncbackend.service.DetectionRecordService;
 import com.nx.lifesyncbackend.mapper.DetectionRecordMapper;
 import org.springframework.stereotype.Service;
