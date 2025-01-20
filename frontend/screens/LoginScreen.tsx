@@ -3,16 +3,16 @@ import {
     KeyboardAvoidingView,
     Platform,
     SafeAreaView,
+    StatusBar,
     StyleSheet,
     Text,
     TextInput,
-    View,
-    StatusBar
+    View
 } from 'react-native';
 import {useContext, useState} from "react";
 import type {BottomTabNavigationHelpers} from "@react-navigation/bottom-tabs/src/types";
 import {AuthContext, AuthProvider} from "../context/AuthContext";
-import apiClient from "../utils/axios";
+import {login} from "../services/api";
 
 
 export default function LoginScreen({navigation}: { navigation: BottomTabNavigationHelpers }) {
@@ -36,17 +36,17 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
     const handleSubmit = async () => {
         if (validateForm()) {
             try {
-                await storeUser({username, password});
-                const response = await apiClient.post('/user/login', {
-                    username,
-                    password,
-                });
-                console.log('Login successful:', JSON.stringify(response.data));
-                setErrors({});
-                setUsername("");
-                setPassword("");
-                console.log('User logged in');
-                navigation.navigate('MainTabs');
+                const response = await login({username, password});
+                if (response.data) {
+                    await storeUser(response.data);
+                    setErrors({});
+                    setUsername("");
+                    setPassword("");
+                    console.log('User logged in');
+                    navigation.navigate('MainTabs');
+                } else {
+                    console.log('Login failed', response.message);
+                }
             } catch (error) {
                 console.log('Error storing user:', error);
             }

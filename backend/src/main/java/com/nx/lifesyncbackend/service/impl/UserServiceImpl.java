@@ -14,6 +14,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
+
+import static com.nx.lifesyncbackend.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * user service impl
@@ -59,25 +62,38 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     @Override
-    public User login(User user, HttpServletRequest request) {
-        if (user.getUsername() == null || user.getPassword() == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "Username or password can't be null");
+    public User login(String username, String password, HttpServletRequest request) {
+        // 1. 校验
+        if (StringUtils.isAnyBlank(username, password)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
+        if (username.length() < 4) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
+        }
+        if (username.length() < 8) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
+        }
+        // 2. 加密
+        String encryptPassword = PasswordUtils.encode(password);
+        // 查询用户是否存在
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("username", user.getUsername());
-        queryWrapper.eq("password", PasswordUtils.encode(user.getPassword()));
-        User loginUser = this.baseMapper.selectOne(queryWrapper);
-        if (loginUser == null) {
-            log.info("Login failed with username[{}]", user.getUsername());
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "User is not existed or wrong password");
+        queryWrapper.eq("username", username);
+        queryWrapper.eq("password", encryptPassword);
+        User user = this.baseMapper.selectOne(queryWrapper);
+        // 用户不存在
+        if (user == null) {
+            log.info("user login failed, userAccount cannot match userPassword");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
         }
-        request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, loginUser);
+        // 3. 记录用户的登录态
+        request.getSession().setAttribute(USER_LOGIN_STATE, user);
+        log.info("user login success username[{}] userId[{}]", user.getUsername(), user.getId());
         return user;
     }
 
     @Override
     public User getLoginUser(HttpServletRequest request) {
-        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         User currentUser = (User) userObj;
         if (currentUser == null || currentUser.getId() == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN);

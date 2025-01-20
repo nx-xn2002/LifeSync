@@ -24,11 +24,12 @@ public interface UserService extends IService<User> {
     /**
      * login
      *
-     * @param user    user
-     * @param request request
+     * @param username username
+     * @param password password
+     * @param request  request
      * @return {@link User }
      */
-    User login(User user, HttpServletRequest request);
+    User login(String username,String password, HttpServletRequest request);
 
     /**
      * get login user

@@ -1,7 +1,8 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios from 'axios';
+
 
 // 创建一个 axios 实例
-const apiClient: AxiosInstance = axios.create({
+export const apiClient: Axios.AxiosInstance = axios.create({
     baseURL: 'http://localhost:8888', // 设置你的 baseUrl
     timeout: 10000, // 请求超时设置（可根据需要调整）
     headers: {
@@ -13,7 +14,7 @@ const apiClient: AxiosInstance = axios.create({
 
 // 请求拦截器（可选）
 apiClient.interceptors.request.use(
-    (config: InternalAxiosRequestConfig) => {
+    (config: any) => {
         // 在这里可以添加请求前的一些逻辑，比如请求头的修改等
         return config;
     },
@@ -24,7 +25,7 @@ apiClient.interceptors.request.use(
 
 // 响应拦截器（可选）
 apiClient.interceptors.response.use(
-    (response: AxiosResponse) => {
+    (response: any) => {
         // 在这里可以对响应数据进行统一处理
         return response;
     },

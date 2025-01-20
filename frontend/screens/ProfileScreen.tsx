@@ -27,7 +27,7 @@ export default function ProfileScreen({navigation}: { navigation: BottomTabNavig
                             </View>
                             <View style={styles.infoCard}>
                                 <Text style={styles.title}>password</Text>
-                                <Text style={styles.body}>{user.password}</Text>
+                                <Text style={styles.body}>修改密码</Text>
                             </View>
                         </>
                     ) : (

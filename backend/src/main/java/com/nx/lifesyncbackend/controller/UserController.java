@@ -3,11 +3,13 @@ package com.nx.lifesyncbackend.controller;
 import com.nx.lifesyncbackend.common.BaseResponse;
 import com.nx.lifesyncbackend.common.ErrorCode;
 import com.nx.lifesyncbackend.common.utils.ResultUtils;
+import com.nx.lifesyncbackend.model.dto.UserLoginRequest;
 import com.nx.lifesyncbackend.model.entity.User;
 import com.nx.lifesyncbackend.exception.BusinessException;
 import com.nx.lifesyncbackend.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -32,11 +34,16 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public BaseResponse<User> login(@RequestBody User user, HttpServletRequest request) {
-        if (user == null) {
+    public BaseResponse<User> login(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+        if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User result = userService.login(user, request);
+        String username = userLoginRequest.getUsername();
+        String password = userLoginRequest.getPassword();
+        if (StringUtils.isAnyBlank(username, password)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User result = userService.login(username, password, request);
         return ResultUtils.success(result);
     }
 

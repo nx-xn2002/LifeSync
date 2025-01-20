@@ -5,9 +5,13 @@ declare namespace USER {
         email?: string;
         basicHealth?: BasicHealth;
     };
+    type UserLoginRequest = {
+        username?: string;
+        password?: string;
+    };
     type BaseResponseUser = {
         code?: number;
-        data?: User;
+        data?: UserInfo;
         message?: string;
     };
     type BasicHealth = {
