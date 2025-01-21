@@ -1,4 +1,5 @@
 import {
+    Alert,
     Button,
     KeyboardAvoidingView,
     Platform,
@@ -45,6 +46,7 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
                     console.log('User logged in');
                     navigation.navigate('MainTabs');
                 } else {
+                    Alert.alert('Login failed', response.message);
                     console.log('Login failed', response.message);
                 }
             } catch (error) {

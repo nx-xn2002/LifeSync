@@ -9,7 +9,7 @@ export const apiClient: Axios.AxiosInstance = axios.create({
         'Content-Type': 'application/json',
         'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // 如果需要认证，可以在这里添加 Authorization 头
     },
-    withCredentials: true, // 确保跨域请求时携带 cookie
+    withCredentials: true,
 });
 
 // 请求拦截器（可选）

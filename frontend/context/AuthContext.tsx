@@ -1,6 +1,6 @@
 import React, {createContext, useState, useEffect, ReactNode} from 'react';
-import * as SecureStore from 'expo-secure-store';
 import {Platform} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 定义 AuthContext 的值类型
 interface AuthContextType {
@@ -32,7 +32,7 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
     // 从 SecureStore 获取用户信息
     useEffect(() => {
         const fetchUser = async () => {
-            const storedUser = await SecureStore.getItemAsync('user');
+            const storedUser = await AsyncStorage.getItem('user');
             if (storedUser) {
                 setUser(JSON.parse(storedUser));  // 设置用户信息
             }
@@ -51,13 +51,7 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
                     )
                 ),
             };
-
-            if (Platform.OS === 'web') {
-                localStorage.setItem('user', JSON.stringify(updatedUser));
-            } else {
-                await SecureStore.setItemAsync('user', JSON.stringify(updatedUser));
-            }
-
+            await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
             setUser(updatedUser);
         } catch (error) {
             console.error('Error storing user:', error);
@@ -66,11 +60,7 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
 
     // 清除用户信息
     const clearUser = async () => {
-        if (Platform.OS === 'web') {
-            localStorage.removeItem('user');
-        } else {
-            await SecureStore.deleteItemAsync('user');
-        }
+        await AsyncStorage.removeItem('user');
         setUser({
             username: '',
             password: '',

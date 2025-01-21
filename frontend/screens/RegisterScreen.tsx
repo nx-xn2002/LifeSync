@@ -1,24 +1,29 @@
 import {
+    Alert,
     Button,
     KeyboardAvoidingView,
     Platform,
     SafeAreaView,
+    StatusBar,
     StyleSheet,
     Text,
     TextInput,
-    View,
-    StatusBar
+    View
 } from 'react-native';
-import {useState} from "react";
-import Constants from "expo-constants/src/Constants";
+import {useContext, useState} from "react";
+import type {BottomTabNavigationHelpers} from "@react-navigation/bottom-tabs/src/types";
+import {AuthContext, AuthProvider} from "../context/AuthContext";
+import {login} from "../services/api";
 
-export default function RegisterScreen() {
+
+export default function Register({navigation}: { navigation: BottomTabNavigationHelpers }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState<ERROR.RegisterError>({});
+    const {storeUser} = useContext(AuthContext);
 
     const validateForm = () => {
-        setErrors({});
+        setErrors({})
         if (!username) {
             errors.username = 'Username is required';
         }
@@ -28,63 +33,72 @@ export default function RegisterScreen() {
         setErrors(errors);
         return Object.keys(errors).length === 0;
     }
-    const handleSubmit = () => {
+
+    const handleSubmit = async () => {
         if (validateForm()) {
-            console.log('Submitted', username, password);
-            setErrors({});
-            setUsername("");
-            setPassword("");
+            try {
+                const response = await login({username, password});
+                if (response.data) {
+                    await storeUser(response.data);
+                    setErrors({});
+                    setUsername("");
+                    setPassword("");
+                    console.log('User logged in');
+                    navigation.navigate('MainTabs');
+                } else {
+                    Alert.alert('Login failed', response.message);
+                    console.log('Login failed', response.message);
+                }
+            } catch (error) {
+                console.log('Error storing user:', error);
+            }
+        } else {
+            console.log('Form validation failed');
         }
     }
+
     return (
-        <SafeAreaView style={styles.container}>
-            <StatusBar/>
-            <KeyboardAvoidingView
-                behavior={'padding'}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
-            >
-                <View style={styles.form}>
-                    <Text style={styles.label}>Username</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder={'Enter your username'}
-                        placeholderTextColor={'gray'}
-                        value={username}
-                        onChangeText={setUsername}
-                    />
-                    {
-                        errors.username ? <Text style={styles.errorText}>{errors.username}</Text> : null
-                    }
-                    <Text style={styles.label}>Password</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder={'Enter your password'}
-                        placeholderTextColor={'gray'}
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry
-                    />
-                    {
-                        errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null
-                    }
-                    <Button title={'Login'} onPress={() => {
-                        handleSubmit()
-                    }}/>
-                </View>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+        <AuthProvider>
+            <SafeAreaView style={styles.container}>
+                <StatusBar/>
+                <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}>
+                    <View style={styles.form}>
+                        <Text style={styles.label}>Username</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder={'Enter your username'}
+                            placeholderTextColor={'gray'}
+                            value={username}
+                            onChangeText={setUsername}
+                        />
+                        {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
+                        <Text style={styles.label}>Password</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder={'Enter your password'}
+                            placeholderTextColor={'gray'}
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                        />
+                        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+                        <Button title={'Login'} onPress={handleSubmit}/>
+                    </View>
+                </KeyboardAvoidingView>
+            </SafeAreaView>
+        </AuthProvider>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: "#f5f5f5",
         paddingTop: StatusBar.currentHeight,
-        paddingHorizontal: 20,
-        justifyContent: 'center',
-    }, form: {
+    },
+    form: {
         backgroundColor: 'white',
+        margin: 16,
         padding: 20,
         borderRadius: 10,
         shadowColor: 'black',
@@ -92,22 +106,26 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
-    }, label: {
+    },
+    label: {
         fontSize: 16,
         marginBottom: 5,
         fontWeight: 'bold',
-    }, input: {
+    },
+    input: {
         height: 40,
         borderColor: '#ddd',
         borderWidth: 1,
         marginBottom: 15,
         padding: 10,
         borderRadius: 5,
-    }, button: {
+    },
+    button: {
         marginBottom: 20,
         padding: 10,
-    }, errorText: {
+    },
+    errorText: {
         color: 'red',
         marginBottom: 10,
-    }
+    },
 });
