@@ -16,7 +16,7 @@ import {AuthContext, AuthProvider} from "../context/AuthContext";
 import {login} from "../services/api";
 
 
-export default function Register({navigation}: { navigation: BottomTabNavigationHelpers }) {
+export default function RegisterScreen({navigation}: { navigation: BottomTabNavigationHelpers }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState<ERROR.RegisterError>({});

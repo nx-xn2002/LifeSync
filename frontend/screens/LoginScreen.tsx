@@ -1,90 +1,359 @@
-import {
-    Alert,
-    Button,
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    View
-} from 'react-native';
-import {useContext, useState} from "react";
+import {Keyboard, SafeAreaView, StatusBar, StyleSheet} from 'react-native';
+import {useState} from "react";
 import type {BottomTabNavigationHelpers} from "@react-navigation/bottom-tabs/src/types";
-import {AuthContext, AuthProvider} from "../context/AuthContext";
-import {login} from "../services/api";
+import {AuthProvider} from "@/context/AuthContext";
+import {Controller, useForm} from "react-hook-form";
+import {z} from "zod";
+import {Toast, ToastTitle, useToast} from "@/components/ui/toast";
+import {
+    ArrowLeftIcon,
+    Button,
+    ButtonIcon,
+    ButtonText,
+    Checkbox,
+    CheckboxIcon,
+    CheckboxIndicator,
+    CheckboxLabel,
+    CheckIcon,
+    EyeIcon,
+    EyeOffIcon,
+    FormControl,
+    FormControlError,
+    FormControlErrorIcon,
+    FormControlErrorText,
+    FormControlLabel,
+    FormControlLabelText,
+    Heading,
+    HStack,
+    Icon,
+    Input,
+    InputField,
+    InputIcon,
+    InputSlot,
+    Link,
+    LinkText,
+    Pressable,
+    Text,
+    VStack
+} from "@/components/ui";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {AlertTriangle} from "lucide-react-native";
 
+const USERS = [
+    {
+        email: "gabrial@gmail.com",
+        password: "Gabrial@123",
+    },
+    {
+        email: "tom@gmail.com",
+        password: "Tom@123",
+    },
+    {
+        email: "thomas@gmail.com",
+        password: "Thomas@1234",
+    },
+];
+
+const loginSchema = z.object({
+    email: z.string().min(1, "Email is required").email(),
+    password: z.string().min(1, "Password is required"),
+    rememberme: z.boolean().optional(),
+});
+
+type LoginSchemaType = z.infer<typeof loginSchema>;
+
+///
 
 export default function LoginScreen({navigation}: { navigation: BottomTabNavigationHelpers }) {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [errors, setErrors] = useState<ERROR.RegisterError>({});
-    const {storeUser} = useContext(AuthContext);
+    // const [username, setUsername] = useState('');
+    // const [password, setPassword] = useState('');
+    // const [errors, setErrors] = useState<ERROR.RegisterError>({});
+    // const {storeUser} = useContext(AuthContext);
 
-    const validateForm = () => {
-        setErrors({})
-        if (!username) {
-            errors.username = 'Username is required';
-        }
-        if (!password) {
-            errors.password = 'Password is required';
-        }
-        setErrors(errors);
-        return Object.keys(errors).length === 0;
-    }
+    ///
+    const {
+        control,
+        handleSubmit,
+        reset,
+        formState: {errors},
+    } = useForm<LoginSchemaType>({
+        resolver: zodResolver(loginSchema),
+    });
+    const toast = useToast();
+    const [validated, setValidated] = useState({
+        emailValid: true,
+        passwordValid: true,
+    });
 
-    const handleSubmit = async () => {
-        if (validateForm()) {
-            try {
-                const response = await login({username, password});
-                if (response.data) {
-                    await storeUser(response.data);
-                    setErrors({});
-                    setUsername("");
-                    setPassword("");
-                    console.log('User logged in');
-                    navigation.navigate('MainTabs');
-                } else {
-                    Alert.alert('Login failed', response.message);
-                    console.log('Login failed', response.message);
-                }
-            } catch (error) {
-                console.log('Error storing user:', error);
+    const onSubmit = (data: LoginSchemaType) => {
+        const user = USERS.find((element) => element.email === data.email);
+        if (user) {
+            if (user.password !== data.password)
+                setValidated({emailValid: true, passwordValid: false});
+            else {
+                setValidated({emailValid: true, passwordValid: true});
+                toast.show({
+                    placement: "bottom right",
+                    render: ({id}) => {
+                        return (
+                            <Toast nativeID={id} variant="outline" action="success">
+                                <ToastTitle>Logged in successfully!</ToastTitle>
+                            </Toast>
+                        );
+                    },
+                });
+                reset();
             }
         } else {
-            console.log('Form validation failed');
+            setValidated({emailValid: false, passwordValid: true});
         }
-    }
+    };
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleState = () => {
+        setShowPassword((showState) => {
+            return !showState;
+        });
+    };
+    const handleKeyPress = () => {
+        Keyboard.dismiss();
+        handleSubmit(onSubmit)();
+    };
+    ///
+    // const validateForm = () => {
+    //     setErrors({})
+    //     if (!username) {
+    //         errors.username = 'Username is required';
+    //     }
+    //     if (!password) {
+    //         errors.password = 'Password is required';
+    //     }
+    //     setErrors(errors);
+    //     return Object.keys(errors).length === 0;
+    // }
+
+    // const handleSubmit = async () => {
+    //     if (validateForm()) {
+    //         try {
+    //             const response = await login({username, password});
+    //             if (response.data) {
+    //                 await storeUser(response.data);
+    //                 setErrors({});
+    //                 setUsername("");
+    //                 setPassword("");
+    //                 console.log('User logged in');
+    //                 navigation.navigate('MainTabs');
+    //             } else {
+    //                 Alert.alert('Login failed', response.message);
+    //                 console.log('Login failed', response.message);
+    //             }
+    //         } catch (error) {
+    //             console.log('Error storing user:', error);
+    //         }
+    //     } else {
+    //         console.log('Form validation failed');
+    //     }
+    // }
 
     return (
         <AuthProvider>
             <SafeAreaView style={styles.container}>
-                <StatusBar/>
-                <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}>
-                    <View style={styles.form}>
-                        <Text style={styles.label}>Username</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder={'Enter your username'}
-                            placeholderTextColor={'gray'}
-                            value={username}
-                            onChangeText={setUsername}
-                        />
-                        {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
-                        <Text style={styles.label}>Password</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder={'Enter your password'}
-                            placeholderTextColor={'gray'}
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                        />
-                        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-                        <Button title={'Login'} onPress={handleSubmit}/>
-                    </View>
-                </KeyboardAvoidingView>
+                {/*<StatusBar/>*/}
+                {/*<KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}>*/}
+                {/*    <View style={styles.form}>*/}
+                {/*        <Text style={styles.label}>Username</Text>*/}
+                {/*        <TextInput*/}
+                {/*            style={styles.input}*/}
+                {/*            placeholder={'Enter your username'}*/}
+                {/*            placeholderTextColor={'gray'}*/}
+                {/*            value={username}*/}
+                {/*            onChangeText={setUsername}*/}
+                {/*        />*/}
+                {/*        {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}*/}
+                {/*        <Text style={styles.label}>Password</Text>*/}
+                {/*        <TextInput*/}
+                {/*            style={styles.input}*/}
+                {/*            placeholder={'Enter your password'}*/}
+                {/*            placeholderTextColor={'gray'}*/}
+                {/*            value={password}*/}
+                {/*            onChangeText={setPassword}*/}
+                {/*            secureTextEntry*/}
+                {/*        />*/}
+                {/*        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}*/}
+                {/*        <Button title={'Login'} onPress={handleSubmit}/>*/}
+                {/*    </View>*/}
+                {/*</KeyboardAvoidingView>*/}
+                <VStack className="max-w-[440px] w-full" space="md" style={{padding: 20}}>
+                    <VStack className="md:items-center" space="md">
+                        <Pressable
+                            onPress={() => {
+                                navigation.goBack();
+                            }}
+                        >
+                            <Icon
+                                as={ArrowLeftIcon}
+                                className="md:hidden text-background-800"
+                                size="xl"
+                            />
+                        </Pressable>
+                        <VStack>
+                            <Heading className="md:text-center" size="3xl">
+                                Log in
+                            </Heading>
+                            <Text>Login to start using LifeSync</Text>
+                        </VStack>
+                    </VStack>
+                    <VStack className="w-full">
+                        <VStack space="xl" className="w-full">
+                            <FormControl
+                                isInvalid={!!errors?.email || !validated.emailValid}
+                                className="w-full"
+                            >
+                                <FormControlLabel>
+                                    <FormControlLabelText>Email</FormControlLabelText>
+                                </FormControlLabel>
+                                <Controller
+                                    defaultValue=""
+                                    name="email"
+                                    control={control}
+                                    rules={{
+                                        validate: async (value) => {
+                                            try {
+                                                await loginSchema.parseAsync({email: value});
+                                                return true;
+                                            } catch (error: any) {
+                                                return error.message;
+                                            }
+                                        },
+                                    }}
+                                    render={({field: {onChange, onBlur, value}}) => (
+                                        <Input>
+                                            <InputField
+                                                placeholder="Enter email"
+                                                value={value}
+                                                onChangeText={onChange}
+                                                onBlur={onBlur}
+                                                onSubmitEditing={handleKeyPress}
+                                                returnKeyType="done"
+                                            />
+                                        </Input>
+                                    )}
+                                />
+                                <FormControlError>
+                                    <FormControlErrorIcon as={AlertTriangle}/>
+                                    <FormControlErrorText>
+                                        {errors?.email?.message ||
+                                            (!validated.emailValid && "Email ID not found")}
+                                    </FormControlErrorText>
+                                </FormControlError>
+                            </FormControl>
+                            {/* Label Message */}
+                            <FormControl
+                                isInvalid={!!errors.password || !validated.passwordValid}
+                                className="w-full"
+                            >
+                                <FormControlLabel>
+                                    <FormControlLabelText>Password</FormControlLabelText>
+                                </FormControlLabel>
+                                <Controller
+                                    defaultValue=""
+                                    name="password"
+                                    control={control}
+                                    rules={{
+                                        validate: async (value) => {
+                                            try {
+                                                await loginSchema.parseAsync({password: value});
+                                                return true;
+                                            } catch (error: any) {
+                                                return error.message;
+                                            }
+                                        },
+                                    }}
+                                    render={({field: {onChange, onBlur, value}}) => (
+                                        <Input>
+                                            <InputField
+                                                type={showPassword ? "text" : "password"}
+                                                placeholder="Enter password"
+                                                value={value}
+                                                onChangeText={onChange}
+                                                onBlur={onBlur}
+                                                onSubmitEditing={handleKeyPress}
+                                                returnKeyType="done"
+                                            />
+                                            <InputSlot onPress={handleState} className="pr-3">
+                                                <InputIcon as={showPassword ? EyeIcon : EyeOffIcon}/>
+                                            </InputSlot>
+                                        </Input>
+                                    )}
+                                />
+                                <FormControlError>
+                                    <FormControlErrorIcon as={AlertTriangle}/>
+                                    <FormControlErrorText>
+                                        {errors?.password?.message ||
+                                            (!validated.passwordValid && "Password was incorrect")}
+                                    </FormControlErrorText>
+                                </FormControlError>
+                            </FormControl>
+                            <HStack className="w-full justify-between ">
+                                <Controller
+                                    name="rememberme"
+                                    defaultValue={false}
+                                    control={control}
+                                    render={({field: {onChange, value}}) => (
+                                        <Checkbox
+                                            size="sm"
+                                            value="Remember me"
+                                            isChecked={value}
+                                            onChange={onChange}
+                                            aria-label="Remember me"
+                                        >
+                                            <CheckboxIndicator>
+                                                <CheckboxIcon as={CheckIcon}/>
+                                            </CheckboxIndicator>
+                                            <CheckboxLabel>Remember me</CheckboxLabel>
+                                        </Checkbox>
+                                    )}
+                                />
+                                <Link href="/auth/forgot-password">
+                                    <LinkText
+                                        className="font-medium text-sm text-primary-700 group-hover/link:text-primary-600">
+                                        Forgot Password?
+                                    </LinkText>
+                                </Link>
+                            </HStack>
+                        </VStack>
+                        <VStack className="w-full my-7 " space="lg" style={{paddingTop: 20}}>
+                            <Button className="w-full" onPress={handleSubmit(onSubmit)}>
+                                <ButtonText className="font-medium">Log in</ButtonText>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                action="secondary"
+                                className="w-full gap-1"
+                                onPress={() => {
+                                }}
+                            >
+                                <ButtonText className="font-medium">
+                                    Continue with Google
+                                </ButtonText>
+                                <ButtonIcon as={ArrowLeftIcon}/>
+                            </Button>
+                        </VStack>
+                        <HStack className="self-center" space="sm">
+                            <Text size="md">Don't have an account?</Text>
+                            <Link onPress={() => {
+                                navigation.navigate('Register')
+                            }}>
+                                <LinkText
+                                    className="font-medium text-primary-700 group-hover/link:text-primary-600  group-hover/pressed:text-primary-700"
+                                    size="md"
+                                >
+                                    Sign up
+                                </LinkText>
+                            </Link>
+                        </HStack>
+                    </VStack>
+                </VStack>
             </SafeAreaView>
         </AuthProvider>
     );
