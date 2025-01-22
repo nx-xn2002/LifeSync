@@ -1,4 +1,6 @@
 import {NavigationContainer} from '@react-navigation/native';
+import "@/global.css";
+import {GluestackUIProvider} from "@/components/ui/gluestack-ui-provider";
 import MonitorScreen from "./screens/MonitorScreen";
 import {AuthProvider} from "./context/AuthContext";
 import HistoryScreen from "./screens/HistoryScreen";
@@ -15,73 +17,73 @@ const Stack = createNativeStackNavigator();
 
 // Tab 导航器
 function MainTabsNavigator() {
-  useEffect(() => {
-    const backAction = () => {
-      Alert.alert('Exit App', 'Do you want to exit the app?', [
-        {
-          text: 'Cancel',
-          onPress: () => null,
-          style: 'cancel',
-        },
-        {
-          text: 'Yes',
-          onPress: () => BackHandler.exitApp(),
-        },
-      ]);
-      return true; // 阻止默认行为
-    };
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-    return () => backHandler.remove();
-  }, []);
-  return (
-      <MainTabs.Navigator initialRouteName="Monitor">
-        <MainTabs.Screen
-            name="Monitor"
-            component={MonitorScreen}
-            options={{
-              title: 'Monitor',
-              tabBarIcon: () => <FontAwesome6 name="heart-pulse" size={20}/>,
-            }}
-        />
-        <MainTabs.Screen
-            name="History"
-            component={HistoryScreen}
-            options={{
-              title: 'History',
-              tabBarIcon: () => <FontAwesome6 name="chart-area" size={20}/>,
-            }}
-        />
-        <MainTabs.Screen
-            name="Profile"
-            component={ProfileScreen}
-            options={{
-              title: 'Profile',
-              tabBarIcon: () => <Ionicons name="person" size={20}/>,
-            }}
-        />
-      </MainTabs.Navigator>
-  );
+    useEffect(() => {
+        const backAction = () => {
+            Alert.alert('Exit App', 'Do you want to exit the app?', [
+                {
+                    text: 'Cancel',
+                    onPress: () => null,
+                    style: 'cancel',
+                },
+                {
+                    text: 'Yes',
+                    onPress: () => BackHandler.exitApp(),
+                },
+            ]);
+            return true; // 阻止默认行为
+        };
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+        return () => backHandler.remove();
+    }, []);
+    return (
+        <GluestackUIProvider mode="light"><MainTabs.Navigator initialRouteName="Monitor" id={undefined}>
+            <MainTabs.Screen
+                name="Monitor"
+                component={MonitorScreen}
+                options={{
+                    title: 'Monitor',
+                    tabBarIcon: () => <FontAwesome6 name="heart-pulse" size={20}/>,
+                }}
+            />
+            <MainTabs.Screen
+                name="History"
+                component={HistoryScreen}
+                options={{
+                    title: 'History',
+                    tabBarIcon: () => <FontAwesome6 name="chart-area" size={20}/>,
+                }}
+            />
+            <MainTabs.Screen
+                name="Profile"
+                component={ProfileScreen}
+                options={{
+                    title: 'Profile',
+                    tabBarIcon: () => <Ionicons name="person" size={20}/>,
+                }}
+            />
+        </MainTabs.Navigator></GluestackUIProvider>
+    );
 }
 
 export default function App() {
-  return (
-      <AuthProvider>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="MainTabs">
-            {/* 包裹 Tab 导航器 */}
-            <Stack.Screen
-                name="MainTabs"
-                component={MainTabsNavigator}
-                options={{headerShown: false}} // 隐藏顶部导航栏
-            />
-            {/* 添加登录页面 */}
-            <Stack.Screen
-                name="Login"
-                component={LoginScreen}
-                options={{title: 'Login'}}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </AuthProvider>
-  );
+    return (
+        <GluestackUIProvider mode="light"><AuthProvider>
+            <NavigationContainer>
+                <Stack.Navigator initialRouteName="MainTabs" id={undefined}>
+                    {/* 包裹 Tab 导航器 */}
+                    <Stack.Screen
+                        name="MainTabs"
+                        component={MainTabsNavigator}
+                        options={{headerShown: false}} // 隐藏顶部导航栏
+                    />
+                    {/* 添加登录页面 */}
+                    <Stack.Screen
+                        name="Login"
+                        component={LoginScreen}
+                        options={{title: 'Login'}}
+                    />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </AuthProvider></GluestackUIProvider>
+    );
 }
