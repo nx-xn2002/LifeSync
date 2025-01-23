@@ -12,6 +12,6 @@ export async function login(
         ...(options || {}),
     });
 
-    return response.data;  // 假设返回的数据符合 UserInfo 类型
+    return response.data;
 }
 

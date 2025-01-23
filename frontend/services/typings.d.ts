@@ -13,6 +13,7 @@ declare namespace USER {
         code?: number;
         data?: UserInfo;
         message?: string;
+        description?: string;
     };
     type BasicHealth = {
         height?: number;

@@ -1,90 +1,311 @@
-import {
-    Alert,
-    Button,
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    View
-} from 'react-native';
+import {Keyboard, SafeAreaView, StatusBar, StyleSheet} from 'react-native';
 import {useContext, useState} from "react";
 import type {BottomTabNavigationHelpers} from "@react-navigation/bottom-tabs/src/types";
-import {AuthContext, AuthProvider} from "../context/AuthContext";
-import {login} from "../services/api";
+import {AuthContext, AuthProvider} from "@/context/AuthContext";
+import {Controller, useForm} from "react-hook-form";
+import {z} from "zod";
+import {Toast, ToastTitle, useToast} from "@/components/ui/toast";
+import {
+    ArrowLeftIcon,
+    Button,
+    ButtonIcon,
+    ButtonText,
+    EyeIcon,
+    EyeOffIcon,
+    FormControl,
+    FormControlError,
+    FormControlErrorIcon,
+    FormControlErrorText,
+    FormControlLabel,
+    FormControlLabelText,
+    Heading,
+    HStack,
+    Icon,
+    Input,
+    InputField,
+    InputIcon,
+    InputSlot,
+    Link,
+    LinkText,
+    Pressable,
+    Text,
+    VStack
+} from "@/components/ui";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {AlertTriangle} from "lucide-react-native";
+import {login} from "@/services/api";
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
+const loginSchema = z.object({
+    //email: z.string().min(1, "Email is required").email(),
+    password: z.string().min(1, "Password is required"),
+    username: z.string().min(1, "Username is required"),
+});
+
+type LoginSchemaType = z.infer<typeof loginSchema>;
+
+///
 
 export default function RegisterScreen({navigation}: { navigation: BottomTabNavigationHelpers }) {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [errors, setErrors] = useState<ERROR.RegisterError>({});
+    // const [username, setUsername] = useState('');
+    // const [password, setPassword] = useState('');
+    // const [errors, setErrors] = useState<ERROR.RegisterError>({});
     const {storeUser} = useContext(AuthContext);
 
-    const validateForm = () => {
-        setErrors({})
-        if (!username) {
-            errors.username = 'Username is required';
-        }
-        if (!password) {
-            errors.password = 'Password is required';
-        }
-        setErrors(errors);
-        return Object.keys(errors).length === 0;
-    }
+    ///
+    const {
+        control,
+        handleSubmit,
+        reset,
+        formState: {errors},
+    } = useForm<LoginSchemaType>({
+        resolver: zodResolver(loginSchema),
+    });
+    const toast = useToast();
+    const [validated, setValidated] = useState({
+        usernameValid: true,
+        passwordValid: true,
+    });
 
-    const handleSubmit = async () => {
-        if (validateForm()) {
-            try {
-                const response = await login({username, password});
-                if (response.data) {
-                    await storeUser(response.data);
-                    setErrors({});
-                    setUsername("");
-                    setPassword("");
-                    console.log('User logged in');
-                    navigation.navigate('MainTabs');
-                } else {
-                    Alert.alert('Login failed', response.message);
-                    console.log('Login failed', response.message);
-                }
-            } catch (error) {
-                console.log('Error storing user:', error);
-            }
+    const onSubmit = async (data: LoginSchemaType) => {
+        setValidated({usernameValid: true, passwordValid: true});
+        const response = await login(data);
+        if (response.data) {
+            reset();
+            toast.show({
+                placement: "top",
+                render: ({id}) => {
+                    return (
+                        <Toast nativeID={id} variant="outline" action="success">
+                            <ToastTitle>Logged in successfully!</ToastTitle>
+                        </Toast>
+                    );
+                },
+            });
+            storeUser(response.data);
+            navigation.navigate('MainTabs');
         } else {
-            console.log('Form validation failed');
+            toast.show({
+                placement: "top",
+                render: ({id}) => {
+                    return (
+                        <Toast nativeID={id} variant="outline" action="error">
+                            <ToastTitle>Login failed!{response.description}</ToastTitle>
+                        </Toast>
+                    );
+                },
+            });
         }
-    }
+    };
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleState = () => {
+        setShowPassword((showState) => {
+            return !showState;
+        });
+    };
+    const handleKeyPress = () => {
+        Keyboard.dismiss();
+        handleSubmit(onSubmit)();
+    };
+    ///
+
+    // const handleSubmit = async () => {
+    //     if (validateForm()) {
+    //         try {
+    //             const response = await login({username, password});
+    //             if (response.data) {
+    //                 await storeUser(response.data);
+    //                 setErrors({});
+    //                 setUsername("");
+    //                 setPassword("");
+    //                 console.log('User logged in');
+    //                 navigation.navigate('MainTabs');
+    //             } else {
+    //                 Alert.alert('Login failed', response.message);
+    //                 console.log('Login failed', response.message);
+    //             }
+    //         } catch (error) {
+    //             console.log('Error storing user:', error);
+    //         }
+    //     } else {
+    //         console.log('Form validation failed');
+    //     }
+    // }
 
     return (
         <AuthProvider>
             <SafeAreaView style={styles.container}>
-                <StatusBar/>
-                <KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}>
-                    <View style={styles.form}>
-                        <Text style={styles.label}>Username</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder={'Enter your username'}
-                            placeholderTextColor={'gray'}
-                            value={username}
-                            onChangeText={setUsername}
-                        />
-                        {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
-                        <Text style={styles.label}>Password</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder={'Enter your password'}
-                            placeholderTextColor={'gray'}
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                        />
-                        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-                        <Button title={'Login'} onPress={handleSubmit}/>
-                    </View>
-                </KeyboardAvoidingView>
+                <VStack className="max-w-[440px] w-full" space="md" style={{padding: 20}}>
+                    {/*页面标头*/}
+                    <VStack className="md:items-center" space="md">
+                        <Pressable
+                            onPress={() => {
+                                navigation.reset({
+                                    index: 0,
+                                    routes: [{name: 'MainTabs', params: {screen: 'Profile'}}],
+                                });
+                            }}
+                        >
+                            <Icon
+                                as={ArrowLeftIcon}
+                                className="md:hidden text-background-800"
+                                size="xl"
+                            />
+                        </Pressable>
+                        <VStack>
+                            <Heading className="md:text-center" size="3xl">
+                                Sign up
+                            </Heading>
+                            <Text>Sign up and start using LifeSync</Text>
+                        </VStack>
+                    </VStack>
+                    <VStack className="w-full">
+                        <VStack space="xl" className="w-full">
+                            {/*用户名输入框*/}
+                            <FormControl
+                                isInvalid={!!errors?.username || !validated.usernameValid}
+                                className="w-full"
+                            >
+                                <FormControlLabel>
+                                    <FormControlLabelText>Username</FormControlLabelText>
+                                </FormControlLabel>
+                                <Controller
+                                    defaultValue=""
+                                    name="username"
+                                    control={control}
+                                    rules={{
+                                        validate: async (value) => {
+                                            try {
+                                                await loginSchema.parseAsync({email: value});
+                                                return true;
+                                            } catch (error: any) {
+                                                return error.message;
+                                            }
+                                        },
+                                    }}
+                                    render={({field: {onChange, onBlur, value}}) => (
+                                        <Input>
+                                            <InputField
+                                                placeholder="Enter username"
+                                                value={value}
+                                                onChangeText={onChange}
+                                                onBlur={onBlur}
+                                                onSubmitEditing={handleKeyPress}
+                                                returnKeyType="done"
+                                            />
+                                        </Input>
+                                    )}
+                                />
+                                <FormControlError>
+                                    <FormControlErrorIcon as={AlertTriangle}/>
+                                    <FormControlErrorText>
+                                        {errors?.username?.message ||
+                                            (!validated.usernameValid && "Email ID not found")}
+                                    </FormControlErrorText>
+                                </FormControlError>
+                            </FormControl>
+                            <FormControl
+                                isInvalid={!!errors.password || !validated.passwordValid}
+                                className="w-full"
+                            >
+                                <FormControlLabel>
+                                    <FormControlLabelText>Password</FormControlLabelText>
+                                </FormControlLabel>
+                                <Controller
+                                    defaultValue=""
+                                    name="password"
+                                    control={control}
+                                    rules={{
+                                        validate: async (value) => {
+                                            try {
+                                                await loginSchema.parseAsync({password: value});
+                                                return true;
+                                            } catch (error: any) {
+                                                return error.message;
+                                            }
+                                        },
+                                    }}
+                                    render={({field: {onChange, onBlur, value}}) => (
+                                        <Input>
+                                            <InputField
+                                                type={showPassword ? "text" : "password"}
+                                                placeholder="Enter password"
+                                                value={value}
+                                                onChangeText={onChange}
+                                                onBlur={onBlur}
+                                                onSubmitEditing={handleKeyPress}
+                                                returnKeyType="done"
+                                            />
+                                            <InputSlot onPress={handleState} className="pr-3">
+                                                <InputIcon as={showPassword ? EyeIcon : EyeOffIcon}/>
+                                            </InputSlot>
+                                        </Input>
+                                    )}
+                                />
+                                <FormControlError>
+                                    <FormControlErrorIcon as={AlertTriangle}/>
+                                    <FormControlErrorText>
+                                        {errors?.password?.message ||
+                                            (!validated.passwordValid && "Password was incorrect")}
+                                    </FormControlErrorText>
+                                </FormControlError>
+                            </FormControl>
+                            {/*忘记密码*/}
+                            <HStack className="w-full right-1 ">
+                                <Link href="/auth/forgot-password">
+                                    <LinkText
+                                        className="font-medium text-sm text-primary-700 group-hover/link:text-primary-600">
+                                        Forgot Password?
+                                    </LinkText>
+                                </Link>
+                            </HStack>
+                        </VStack>
+                        {/*注册按钮*/}
+                        <VStack className="w-full my-7 " space="lg" style={{paddingTop: 20}}>
+                            <Button className="w-full" onPress={handleSubmit(onSubmit)}>
+                                <ButtonText className="font-medium">Log in</ButtonText>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                action="secondary"
+                                className="w-full gap-1"
+                                onPress={() => {
+                                    toast.show({
+                                        placement: "top",
+                                        render: ({id}) => {
+                                            return (
+                                                <Toast nativeID={id} variant="outline" action="success">
+                                                    <ToastTitle>Logged in successfully!</ToastTitle>
+                                                </Toast>
+                                            );
+                                        },
+                                    });
+                                    navigation.navigate('MainTabs');
+                                }}
+                            >
+                                <ButtonText className="font-medium">
+                                    Continue as Guest
+                                </ButtonText>
+                                <ButtonIcon as={() => <FontAwesome6 name="user-secret" size={24} color="black"/>}/>
+                            </Button>
+                        </VStack>
+                        {/*注册按钮*/}
+                        <HStack className="self-center" space="sm">
+                            <Text size="md">Already have an account?</Text>
+                            <Link onPress={() => {
+                                navigation.navigate('Login')
+                            }}>
+                                <LinkText
+                                    className="font-medium text-primary-700 group-hover/link:text-primary-600 group-hover/pressed:text-primary-700"
+                                    size="md"
+                                >
+                                    Login
+                                </LinkText>
+                            </Link>
+                        </HStack>
+                    </VStack>
+                </VStack>
             </SafeAreaView>
         </AuthProvider>
     );

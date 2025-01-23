@@ -19,7 +19,6 @@ interface AuthProviderProps {
 export const AuthProvider = ({children}: AuthProviderProps) => {
     const [user, setUser] = useState<USER.UserInfo>({
         username: '',
-        password: '',
         email: '',
         basicHealth: {
             height: 0,
@@ -45,11 +44,14 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
         try {
             const updatedUser = {
                 ...user,
-                ...Object.fromEntries(
-                    Object.entries(newUser).map(([key, value]) =>
-                        value !== undefined && value !== '' ? [key, value] : [key, user[key as keyof USER.UserInfo]]
-                    )
-                ),
+                username: newUser.username || user.username,
+                email: newUser.email || user.email,
+                basicHealth: {
+                    height: newUser.basicHealth?.height ?? user.basicHealth.height,
+                    weight: newUser.basicHealth?.weight ?? user.basicHealth.weight,
+                    age: newUser.basicHealth?.age ?? user.basicHealth.age,
+                    gender: newUser.basicHealth?.gender || user.basicHealth.gender,
+                },
             };
             await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
             setUser(updatedUser);

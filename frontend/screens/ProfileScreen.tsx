@@ -104,17 +104,15 @@ const ProfileCard = ({user}: any) => {
 const PersonalInfoSection = ({setModalVisible}: any) => {
     return (
         <VStack space="lg">
-            <HStack className="justify-between">
-                <Pressable onPress={() => setModalVisible(true)}>
+            <Pressable onPress={() => setModalVisible(true)}>
+                <HStack className="justify-between">
                     <HStack space="md">
                         <Icon as={User}/>
                         <Text>Personal Info</Text>
                     </HStack>
-                </Pressable>
-                <Pressable onPress={() => setModalVisible(true)}>
                     <Icon as={ChevronRight}/>
-                </Pressable>
-            </HStack>
+                </HStack>
+            </Pressable>
             <HStack className="justify-between">
                 <Pressable onPress={() => setModalVisible(true)}>
                     <HStack space="md">

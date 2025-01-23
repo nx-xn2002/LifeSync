@@ -1,20 +1,14 @@
 import {Keyboard, SafeAreaView, StatusBar, StyleSheet} from 'react-native';
-import {useState} from "react";
+import {useContext, useState} from "react";
 import type {BottomTabNavigationHelpers} from "@react-navigation/bottom-tabs/src/types";
-import {AuthProvider} from "@/context/AuthContext";
+import {AuthContext, AuthProvider} from "@/context/AuthContext";
 import {Controller, useForm} from "react-hook-form";
 import {z} from "zod";
 import {Toast, ToastTitle, useToast} from "@/components/ui/toast";
 import {
     ArrowLeftIcon,
-    Button,
-    ButtonIcon,
+    Button, ButtonIcon,
     ButtonText,
-    Checkbox,
-    CheckboxIcon,
-    CheckboxIndicator,
-    CheckboxLabel,
-    CheckIcon,
     EyeIcon,
     EyeOffIcon,
     FormControl,
@@ -38,39 +32,19 @@ import {
 } from "@/components/ui";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {AlertTriangle} from "lucide-react-native";
-
-const USERS = [
-    {
-        email: "gabrial@gmail.com",
-        password: "Gabrial@123",
-    },
-    {
-        email: "tom@gmail.com",
-        password: "Tom@123",
-    },
-    {
-        email: "thomas@gmail.com",
-        password: "Thomas@1234",
-    },
-];
+import {login} from "@/services/api";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 const loginSchema = z.object({
-    email: z.string().min(1, "Email is required").email(),
     password: z.string().min(1, "Password is required"),
-    rememberme: z.boolean().optional(),
+    username: z.string().min(1, "Username is required"),
 });
 
 type LoginSchemaType = z.infer<typeof loginSchema>;
 
-///
-
 export default function LoginScreen({navigation}: { navigation: BottomTabNavigationHelpers }) {
-    // const [username, setUsername] = useState('');
-    // const [password, setPassword] = useState('');
-    // const [errors, setErrors] = useState<ERROR.RegisterError>({});
-    // const {storeUser} = useContext(AuthContext);
+    const {storeUser} = useContext(AuthContext);
 
-    ///
     const {
         control,
         handleSubmit,
@@ -81,31 +55,38 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
     });
     const toast = useToast();
     const [validated, setValidated] = useState({
-        emailValid: true,
+        usernameValid: true,
         passwordValid: true,
     });
 
-    const onSubmit = (data: LoginSchemaType) => {
-        const user = USERS.find((element) => element.email === data.email);
-        if (user) {
-            if (user.password !== data.password)
-                setValidated({emailValid: true, passwordValid: false});
-            else {
-                setValidated({emailValid: true, passwordValid: true});
-                toast.show({
-                    placement: "bottom right",
-                    render: ({id}) => {
-                        return (
-                            <Toast nativeID={id} variant="outline" action="success">
-                                <ToastTitle>Logged in successfully!</ToastTitle>
-                            </Toast>
-                        );
-                    },
-                });
-                reset();
-            }
+    const onSubmit = async (data: LoginSchemaType) => {
+        setValidated({usernameValid: true, passwordValid: true});
+        const response = await login(data);
+        if (response.data) {
+            reset();
+            toast.show({
+                placement: "top",
+                render: ({id}) => {
+                    return (
+                        <Toast nativeID={id} variant="outline" action="success">
+                            <ToastTitle>Logged in successfully!</ToastTitle>
+                        </Toast>
+                    );
+                },
+            });
+            storeUser(response.data);
+            navigation.navigate('MainTabs');
         } else {
-            setValidated({emailValid: false, passwordValid: true});
+            toast.show({
+                placement: "top",
+                render: ({id}) => {
+                    return (
+                        <Toast nativeID={id} variant="outline" action="error">
+                            <ToastTitle>Login failed!{response.description}</ToastTitle>
+                        </Toast>
+                    );
+                },
+            });
         }
     };
     const [showPassword, setShowPassword] = useState(false);
@@ -119,75 +100,18 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
         Keyboard.dismiss();
         handleSubmit(onSubmit)();
     };
-    ///
-    // const validateForm = () => {
-    //     setErrors({})
-    //     if (!username) {
-    //         errors.username = 'Username is required';
-    //     }
-    //     if (!password) {
-    //         errors.password = 'Password is required';
-    //     }
-    //     setErrors(errors);
-    //     return Object.keys(errors).length === 0;
-    // }
-
-    // const handleSubmit = async () => {
-    //     if (validateForm()) {
-    //         try {
-    //             const response = await login({username, password});
-    //             if (response.data) {
-    //                 await storeUser(response.data);
-    //                 setErrors({});
-    //                 setUsername("");
-    //                 setPassword("");
-    //                 console.log('User logged in');
-    //                 navigation.navigate('MainTabs');
-    //             } else {
-    //                 Alert.alert('Login failed', response.message);
-    //                 console.log('Login failed', response.message);
-    //             }
-    //         } catch (error) {
-    //             console.log('Error storing user:', error);
-    //         }
-    //     } else {
-    //         console.log('Form validation failed');
-    //     }
-    // }
-
     return (
         <AuthProvider>
             <SafeAreaView style={styles.container}>
-                {/*<StatusBar/>*/}
-                {/*<KeyboardAvoidingView behavior={'padding'} keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}>*/}
-                {/*    <View style={styles.form}>*/}
-                {/*        <Text style={styles.label}>Username</Text>*/}
-                {/*        <TextInput*/}
-                {/*            style={styles.input}*/}
-                {/*            placeholder={'Enter your username'}*/}
-                {/*            placeholderTextColor={'gray'}*/}
-                {/*            value={username}*/}
-                {/*            onChangeText={setUsername}*/}
-                {/*        />*/}
-                {/*        {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}*/}
-                {/*        <Text style={styles.label}>Password</Text>*/}
-                {/*        <TextInput*/}
-                {/*            style={styles.input}*/}
-                {/*            placeholder={'Enter your password'}*/}
-                {/*            placeholderTextColor={'gray'}*/}
-                {/*            value={password}*/}
-                {/*            onChangeText={setPassword}*/}
-                {/*            secureTextEntry*/}
-                {/*        />*/}
-                {/*        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}*/}
-                {/*        <Button title={'Login'} onPress={handleSubmit}/>*/}
-                {/*    </View>*/}
-                {/*</KeyboardAvoidingView>*/}
                 <VStack className="max-w-[440px] w-full" space="md" style={{padding: 20}}>
+                    {/*页面标头*/}
                     <VStack className="md:items-center" space="md">
                         <Pressable
                             onPress={() => {
-                                navigation.goBack();
+                                navigation.reset({
+                                    index: 0,
+                                    routes: [{ name: 'MainTabs', params: { screen: 'Profile' } }],
+                                });
                             }}
                         >
                             <Icon
@@ -205,16 +129,17 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
                     </VStack>
                     <VStack className="w-full">
                         <VStack space="xl" className="w-full">
+                            {/*用户名输入框*/}
                             <FormControl
-                                isInvalid={!!errors?.email || !validated.emailValid}
+                                isInvalid={!!errors?.username || !validated.usernameValid}
                                 className="w-full"
                             >
                                 <FormControlLabel>
-                                    <FormControlLabelText>Email</FormControlLabelText>
+                                    <FormControlLabelText>Username</FormControlLabelText>
                                 </FormControlLabel>
                                 <Controller
                                     defaultValue=""
-                                    name="email"
+                                    name="username"
                                     control={control}
                                     rules={{
                                         validate: async (value) => {
@@ -229,7 +154,7 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
                                     render={({field: {onChange, onBlur, value}}) => (
                                         <Input>
                                             <InputField
-                                                placeholder="Enter email"
+                                                placeholder="Enter username"
                                                 value={value}
                                                 onChangeText={onChange}
                                                 onBlur={onBlur}
@@ -242,12 +167,11 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
                                 <FormControlError>
                                     <FormControlErrorIcon as={AlertTriangle}/>
                                     <FormControlErrorText>
-                                        {errors?.email?.message ||
-                                            (!validated.emailValid && "Email ID not found")}
+                                        {errors?.username?.message ||
+                                            (!validated.usernameValid && "Email ID not found")}
                                     </FormControlErrorText>
                                 </FormControlError>
                             </FormControl>
-                            {/* Label Message */}
                             <FormControl
                                 isInvalid={!!errors.password || !validated.passwordValid}
                                 className="w-full"
@@ -294,26 +218,8 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
                                     </FormControlErrorText>
                                 </FormControlError>
                             </FormControl>
-                            <HStack className="w-full justify-between ">
-                                <Controller
-                                    name="rememberme"
-                                    defaultValue={false}
-                                    control={control}
-                                    render={({field: {onChange, value}}) => (
-                                        <Checkbox
-                                            size="sm"
-                                            value="Remember me"
-                                            isChecked={value}
-                                            onChange={onChange}
-                                            aria-label="Remember me"
-                                        >
-                                            <CheckboxIndicator>
-                                                <CheckboxIcon as={CheckIcon}/>
-                                            </CheckboxIndicator>
-                                            <CheckboxLabel>Remember me</CheckboxLabel>
-                                        </Checkbox>
-                                    )}
-                                />
+                            {/*忘记密码*/}
+                            <HStack className="w-full right-1 ">
                                 <Link href="/auth/forgot-password">
                                     <LinkText
                                         className="font-medium text-sm text-primary-700 group-hover/link:text-primary-600">
@@ -322,6 +228,7 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
                                 </Link>
                             </HStack>
                         </VStack>
+                        {/*登录按钮*/}
                         <VStack className="w-full my-7 " space="lg" style={{paddingTop: 20}}>
                             <Button className="w-full" onPress={handleSubmit(onSubmit)}>
                                 <ButtonText className="font-medium">Log in</ButtonText>
@@ -331,14 +238,26 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
                                 action="secondary"
                                 className="w-full gap-1"
                                 onPress={() => {
+                                    toast.show({
+                                        placement: "top",
+                                        render: ({id}) => {
+                                            return (
+                                                <Toast nativeID={id} variant="outline" action="success">
+                                                    <ToastTitle>Logged in successfully!</ToastTitle>
+                                                </Toast>
+                                            );
+                                        },
+                                    });
+                                    navigation.navigate('MainTabs');
                                 }}
                             >
                                 <ButtonText className="font-medium">
-                                    Continue with Google
+                                    Continue as Guest
                                 </ButtonText>
-                                <ButtonIcon as={ArrowLeftIcon}/>
+                                <ButtonIcon as={() => <FontAwesome6 name="user-secret" size={24} color="black"/>}/>
                             </Button>
                         </VStack>
+                        {/*注册按钮*/}
                         <HStack className="self-center" space="sm">
                             <Text size="md">Don't have an account?</Text>
                             <Link onPress={() => {
