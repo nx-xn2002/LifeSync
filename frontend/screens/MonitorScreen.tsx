@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from "react-native";
+import {StatusBar, StyleSheet, Text, View} from "react-native";
 
 export default function MonitorScreen() {
     return (
@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        paddingTop: StatusBar.currentHeight,
     }, text: {
         fontSize: 20,
         fontWeight: 'bold',

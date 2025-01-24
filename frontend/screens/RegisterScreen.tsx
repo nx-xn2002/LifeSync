@@ -193,6 +193,7 @@ export default function RegisterScreen({navigation}: { navigation: BottomTabNavi
                                                 onBlur={onBlur}
                                                 onSubmitEditing={handleKeyPress}
                                                 returnKeyType="done"
+                                                style={{width: "100%", height: 50,}}
                                             />
                                         </Input>
                                     )}
@@ -236,8 +237,9 @@ export default function RegisterScreen({navigation}: { navigation: BottomTabNavi
                                                 onBlur={onBlur}
                                                 onSubmitEditing={handleKeyPress}
                                                 returnKeyType="done"
+                                                style={{width: "100%", height: 50,}}
                                             />
-                                            <InputSlot onPress={handleState} className="pr-3">
+                                            <InputSlot onPress={handleState} className="pr-3" style={{marginRight: 10}}>
                                                 <InputIcon as={showPassword ? EyeIcon : EyeOffIcon}/>
                                             </InputSlot>
                                         </Input>

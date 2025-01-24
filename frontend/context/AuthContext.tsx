@@ -1,5 +1,4 @@
-import React, {createContext, useState, useEffect, ReactNode} from 'react';
-import {Platform} from 'react-native';
+import React, {createContext, ReactNode, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 定义 AuthContext 的值类型

@@ -12,9 +12,10 @@ import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import RegisterScreen from "@/screens/RegisterScreen";
 import ExitAppDialog from "@/components/ExitAppDialog";
 import {createStackNavigator} from "@react-navigation/stack";
+import {BasicHealthProvider} from "@/context/BasicHealthContext";
 
 const MainTabs = createBottomTabNavigator();
-const Stack = createStackNavigator ();
+const Stack = createStackNavigator();
 
 // Tab 导航器
 function MainTabsNavigator() {
@@ -57,33 +58,35 @@ function MainTabsNavigator() {
 
 export default function App() {
     return (
-        <GluestackUIProvider mode="light">
+        <GluestackUIProvider mode="light" >
             <AuthProvider>
-                <NavigationContainer>
-                    <Stack.Navigator
-                        initialRouteName="MainTabs"
-                        id={undefined}
-                        screenOptions={{
-                            headerShown: false,
-                            animation: "scale_from_center"
-                        }}
-                    >
-                        {/* 包裹 Tab 导航器 */}
-                        <Stack.Screen
-                            name="MainTabs"
-                            component={MainTabsNavigator}
-                        />
-                        {/* 添加登录页面 */}
-                        <Stack.Screen
-                            name="Login"
-                            component={LoginScreen}
-                        />
-                        <Stack.Screen
-                            name="Register"
-                            component={RegisterScreen}
-                        />
-                    </Stack.Navigator>
-                </NavigationContainer>
+                <BasicHealthProvider>
+                    <NavigationContainer>
+                        <Stack.Navigator
+                            initialRouteName="MainTabs"
+                            id={undefined}
+                            screenOptions={{
+                                headerShown: false,
+                                animation: "scale_from_center"
+                            }}
+                        >
+                            {/* 包裹 Tab 导航器 */}
+                            <Stack.Screen
+                                name="MainTabs"
+                                component={MainTabsNavigator}
+                            />
+                            {/* 添加登录页面 */}
+                            <Stack.Screen
+                                name="Login"
+                                component={LoginScreen}
+                            />
+                            <Stack.Screen
+                                name="Register"
+                                component={RegisterScreen}
+                            />
+                        </Stack.Navigator>
+                    </NavigationContainer>
+                </BasicHealthProvider>
             </AuthProvider>
         </GluestackUIProvider>
     );

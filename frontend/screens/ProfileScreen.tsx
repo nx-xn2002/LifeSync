@@ -15,6 +15,9 @@ export default function ProfileScreen({navigation}: { navigation: BottomTabNavig
     const [modalVisible, setModalVisible] = useState(false);
     useEffect(() => {
         console.log(user)
+        if(!user){
+
+        }
     }, []);
     return (
         //TODO:添加用户基本信息显示

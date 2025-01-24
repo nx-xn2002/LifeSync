@@ -5,16 +5,7 @@ declare namespace USER {
         email?: string;
         basicHealth?: BasicHealth;
     };
-    type UserLoginRequest = {
-        username?: string;
-        password?: string;
-    };
-    type BaseResponseUser = {
-        code?: number;
-        data?: UserInfo;
-        message?: string;
-        description?: string;
-    };
+
     type BasicHealth = {
         height?: number;
         weight?: number;
@@ -22,11 +13,22 @@ declare namespace USER {
         gender?: string;
     };
 }
-
-declare namespace ERROR {
-    type RegisterError = {
+declare namespace API {
+    type UserLoginRequest = {
         username?: string;
         password?: string;
+    };
+    type BaseResponse = {
+        code?: number;
+        data?: any;
+        message?: string;
+        description?: string;
+    };
+    type BaseResponseUser = {
+        code?: number;
+        data?: USER.UserInfo;
+        message?: string;
+        description?: string;
     };
 }
 

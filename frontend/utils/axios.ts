@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // 创建一个 axios 实例
 export const apiClient: Axios.AxiosInstance = axios.create({
-    baseURL: 'http://localhost:8888', // 设置你的 baseUrl
+    baseURL: 'http://192.168.3.6:8888', // 设置你的 baseUrl
     timeout: 10000, // 请求超时设置（可根据需要调整）
     headers: {
         'Content-Type': 'application/json',

@@ -4,7 +4,7 @@ import type {BottomTabNavigationHelpers} from "@react-navigation/bottom-tabs/src
 import {AuthContext, AuthProvider} from "@/context/AuthContext";
 import {Controller, useForm} from "react-hook-form";
 import {z} from "zod";
-import {Toast, ToastTitle, useToast} from "@/components/ui/toast";
+import {Toast, ToastDescription, ToastTitle, useToast} from "@/components/ui/toast";
 import {
     ArrowLeftIcon,
     Button, ButtonIcon,
@@ -62,13 +62,17 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
     const onSubmit = async (data: LoginSchemaType) => {
         setValidated({usernameValid: true, passwordValid: true});
         const response = await login(data);
+        reset();
         if (response.data) {
-            reset();
             toast.show({
                 placement: "top",
+                duration: 3000,
                 render: ({id}) => {
                     return (
-                        <Toast nativeID={id} variant="outline" action="success">
+                        <Toast nativeID={id}
+                               variant="outline"
+                               action="error"
+                        >
                             <ToastTitle>Logged in successfully!</ToastTitle>
                         </Toast>
                     );
@@ -77,12 +81,21 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
             storeUser(response.data);
             navigation.navigate('MainTabs');
         } else {
+            console.log("Login failed!", response.description);
+            const failedStr = "Login failed!" + response.description;
             toast.show({
                 placement: "top",
+                duration: 3000,
                 render: ({id}) => {
                     return (
-                        <Toast nativeID={id} variant="outline" action="error">
-                            <ToastTitle>Login failed!{response.description}</ToastTitle>
+                        <Toast nativeID={id}
+                               variant="outline"
+                               action="error"
+                        >
+                            <ToastTitle>Login failed!</ToastTitle>
+                            <ToastDescription>
+                                {response.description}
+                            </ToastDescription>
                         </Toast>
                     );
                 },
@@ -101,8 +114,9 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
         handleSubmit(onSubmit)();
     };
     return (
-        <AuthProvider>
-            <SafeAreaView style={styles.container}>
+
+        <SafeAreaView style={styles.container}>
+            <AuthProvider>
                 <VStack className="max-w-[440px] w-full" space="md" style={{padding: 20}}>
                     {/*页面标头*/}
                     <VStack className="md:items-center" space="md">
@@ -110,7 +124,7 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
                             onPress={() => {
                                 navigation.reset({
                                     index: 0,
-                                    routes: [{ name: 'MainTabs', params: { screen: 'Profile' } }],
+                                    routes: [{name: 'MainTabs', params: {screen: 'Profile'}}],
                                 });
                             }}
                         >
@@ -160,6 +174,7 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
                                                 onBlur={onBlur}
                                                 onSubmitEditing={handleKeyPress}
                                                 returnKeyType="done"
+                                                style={{width: "100%", height: 50,}}
                                             />
                                         </Input>
                                     )}
@@ -203,8 +218,9 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
                                                 onBlur={onBlur}
                                                 onSubmitEditing={handleKeyPress}
                                                 returnKeyType="done"
+                                                style={{width: "100%", height: 50,}}
                                             />
-                                            <InputSlot onPress={handleState} className="pr-3">
+                                            <InputSlot onPress={handleState} className="pr-3" style={{marginRight: 10}}>
                                                 <InputIcon as={showPassword ? EyeIcon : EyeOffIcon}/>
                                             </InputSlot>
                                         </Input>
@@ -273,8 +289,8 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
                         </HStack>
                     </VStack>
                 </VStack>
-            </SafeAreaView>
-        </AuthProvider>
+            </AuthProvider>
+        </SafeAreaView>
     );
 }
 
