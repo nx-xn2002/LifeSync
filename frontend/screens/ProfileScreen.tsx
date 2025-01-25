@@ -5,9 +5,11 @@ import type {BottomTabNavigationHelpers} from "@react-navigation/bottom-tabs/src
 import {AuthContext} from "@/context/AuthContext";
 import LogoutAlertDialog from "@/components/LogoutAlertDialog";
 import {Button, ButtonText, Divider, Heading, HStack, Icon, Pressable, Text, VStack,} from "@/components/ui";
-import {ChevronRight, HeadsetIcon, MessageCircleQuestionIcon, Settings, User,} from "lucide-react-native";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import md5 from "md5"
-import ListYourPlaceModal from "@/components/ListYourPlaceModal";
+import BasicHealthModal from "@/components/BasicHealthModal";
+import globalStyles from "@/components/GlobalStyles";
 
 export default function ProfileScreen({navigation}: { navigation: BottomTabNavigationHelpers }) {
     const {user, storeUser} = useContext(AuthContext);
@@ -15,7 +17,7 @@ export default function ProfileScreen({navigation}: { navigation: BottomTabNavig
     const [modalVisible, setModalVisible] = useState(false);
     useEffect(() => {
         console.log(user)
-        if(!user){
+        if (!user) {
 
         }
     }, []);
@@ -42,7 +44,7 @@ export default function ProfileScreen({navigation}: { navigation: BottomTabNavig
                 action={user.username !== '' ? "切换账号" : "登录"}
                 navigation={navigation}
             />
-            <ListYourPlaceModal
+            <BasicHealthModal
                 modalVisible={modalVisible}
                 setModalVisible={setModalVisible}
             />
@@ -110,23 +112,21 @@ const PersonalInfoSection = ({setModalVisible}: any) => {
             <Pressable onPress={() => setModalVisible(true)}>
                 <HStack className="justify-between">
                     <HStack space="md">
-                        <Icon as={User}/>
+                        <Icon as={() => <AntDesign name="user" size={24} color="black"/>}/>
                         <Text>Personal Info</Text>
                     </HStack>
-                    <Icon as={ChevronRight}/>
+                    <Icon as={() => <AntDesign name="right" size={24} color="black"/>}/>
                 </HStack>
             </Pressable>
-            <HStack className="justify-between">
-                <Pressable onPress={() => setModalVisible(true)}>
+            <Pressable onPress={() => setModalVisible(true)}>
+                <HStack className="justify-between">
                     <HStack space="md">
-                        <Icon as={Settings}/>
+                        <Icon as={() => <AntDesign name="setting" size={24} color="black"/>}/>
                         <Text>Account</Text>
                     </HStack>
-                </Pressable>
-                <Pressable onPress={() => console.log("pressed")}>
-                    <Icon as={ChevronRight}/>
-                </Pressable>
-            </HStack>
+                    <Icon as={() => <AntDesign name="right" size={24} color="black"/>}/>
+                </HStack>
+            </Pressable>
         </VStack>
     );
 };
@@ -135,24 +135,24 @@ const SupportSection = () => {
     return (
         <VStack space="lg">
             <Heading className="mb-1">Support</Heading>
-            <HStack className="justify-between">
-                <HStack space="md">
-                    <Icon as={MessageCircleQuestionIcon}/>
-                    <Text>Get Help</Text>
+            <Pressable disabled={true}>
+                <HStack className="justify-between">
+                    <HStack space="md">
+                        <Icon as={() => <AntDesign name="questioncircleo" size={24} color="black"/>}/>
+                        <Text>Get Help</Text>
+                    </HStack>
+                    <Icon as={() => <AntDesign name="right" size={24} color="black"/>}/>
                 </HStack>
-                <Pressable>
-                    <Icon as={ChevronRight}/>
-                </Pressable>
-            </HStack>
-            <HStack className="justify-between">
-                <HStack space="md">
-                    <Icon as={HeadsetIcon}/>
-                    <Text>Contact Support</Text>
+            </Pressable>
+            <Pressable disabled={true}>
+                <HStack className="justify-between">
+                    <HStack space="md">
+                        <Icon as={() => <FontAwesome6 name="headset" size={24} color="black"/>}/>
+                        <Text>Contact Support</Text>
+                    </HStack>
+                    <Icon as={() => <AntDesign name="right" size={24} color="black"/>}/>
                 </HStack>
-                <Pressable>
-                    <Icon as={ChevronRight}/>
-                </Pressable>
-            </HStack>
+            </Pressable>
         </VStack>
     );
 };

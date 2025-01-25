@@ -18,9 +18,9 @@ declare namespace API {
         username?: string;
         password?: string;
     };
-    type BaseResponse = {
+    type BaseResponseBasicHealth = {
         code?: number;
-        data?: any;
+        data?: USER.BasicHealth;
         message?: string;
         description?: string;
     };

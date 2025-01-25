@@ -1,7 +1,7 @@
 server:
   port: 8888
   servlet:
-    context-path: /
+    context-path: /api
 spring:
   application:
     name: LifeSyncBackend
@@ -42,3 +42,5 @@ knife4j:
     language: zh_cn
 common:
   salt: life_sync
+  # 15天
+  expire: 1296000000

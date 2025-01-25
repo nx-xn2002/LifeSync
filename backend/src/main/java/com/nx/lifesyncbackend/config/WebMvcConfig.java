@@ -15,13 +15,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        // 覆盖所有请求
         registry.addMapping("/**")
-                // 使用 allowedOriginPatterns 允许所有跨域请求
+                // 允许发送 Cookie
+                .allowCredentials(true)
+                // 放行哪些域名（必须用 patterns，否则 * 会和 allowCredentials 冲突）
                 .allowedOriginPatterns("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .maxAge(3600)
-                .allowedHeaders("Origin", "Accept", "Content-Type", "Authorization")
-                .allowCredentials(true);
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .exposedHeaders("*");
     }
 }
 

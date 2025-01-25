@@ -9,6 +9,7 @@ import com.nx.lifesyncbackend.exception.BusinessException;
 import com.nx.lifesyncbackend.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +35,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public BaseResponse<User> login(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+    public BaseResponse<User> login(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request,
+                                    HttpServletResponse response) {
         if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -43,7 +45,7 @@ public class UserController {
         if (StringUtils.isAnyBlank(username, password)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User result = userService.login(username, password, request);
+        User result = userService.login(username, password, request,response);
         return ResultUtils.success(result);
     }
 

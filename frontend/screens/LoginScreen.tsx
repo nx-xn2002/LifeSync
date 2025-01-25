@@ -71,7 +71,7 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
                     return (
                         <Toast nativeID={id}
                                variant="outline"
-                               action="error"
+                               action="success"
                         >
                             <ToastTitle>Logged in successfully!</ToastTitle>
                         </Toast>

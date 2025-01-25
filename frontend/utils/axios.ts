@@ -1,36 +1,47 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-// 创建一个 axios 实例
 export const apiClient: Axios.AxiosInstance = axios.create({
-    baseURL: 'http://192.168.3.6:8888', // 设置你的 baseUrl
+    baseURL: 'http://192.168.3.6:8888/api', // 设置你的 baseUrl
     timeout: 10000, // 请求超时设置（可根据需要调整）
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer YOUR_ACCESS_TOKEN', // 如果需要认证，可以在这里添加 Authorization 头
     },
-    withCredentials: true,
 });
 
-// 请求拦截器（可选）
+// 请求拦截器
 apiClient.interceptors.request.use(
-    (config: any) => {
-        // 在这里可以添加请求前的一些逻辑，比如请求头的修改等
+    (config) => {
+        const storeToken = async () => {
+            const token = await AsyncStorage.getItem('token'); // 使用 await 等待异步结果
+            if (token) {
+                console.log('token', token);
+                config.headers['token'] = token;
+            }
+        };
+        storeToken().then(() => {
+        });
         return config;
     },
-    (error: any) => {
+    (error) => {
         return Promise.reject(error);
     }
 );
 
-// 响应拦截器（可选）
+// 响应拦截器
 apiClient.interceptors.response.use(
-    (response: any) => {
-        // 在这里可以对响应数据进行统一处理
+    (response) => {
+        const token = response.headers['token'];
+        console.log('token', token)
+        if (token) {
+            AsyncStorage.setItem('token', token).then(() => {
+                console.log('token store success', token)
+                return response
+            });
+        }
         return response;
     },
-    (error: any) => {
-        // 在这里可以进行错误处理
+    (error) => {
         return Promise.reject(error);
     }
 );

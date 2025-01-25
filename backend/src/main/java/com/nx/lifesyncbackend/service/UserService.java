@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.nx.lifesyncbackend.common.BaseResponse;
 import com.nx.lifesyncbackend.model.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * user service
@@ -27,9 +28,10 @@ public interface UserService extends IService<User> {
      * @param username username
      * @param password password
      * @param request  request
+     * @param response response
      * @return {@link User }
      */
-    User login(String username,String password, HttpServletRequest request);
+    User login(String username, String password, HttpServletRequest request, HttpServletResponse response);
 
     /**
      * get login user
