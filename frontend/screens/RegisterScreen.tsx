@@ -108,30 +108,6 @@ export default function RegisterScreen({navigation}: { navigation: BottomTabNavi
         Keyboard.dismiss();
         handleSubmit(onSubmit)();
     };
-    ///
-
-    // const handleSubmit = async () => {
-    //     if (validateForm()) {
-    //         try {
-    //             const response = await login({username, password});
-    //             if (response.data) {
-    //                 await storeUser(response.data);
-    //                 setErrors({});
-    //                 setUsername("");
-    //                 setPassword("");
-    //                 console.log('User logged in');
-    //                 navigation.navigate('MainTabs');
-    //             } else {
-    //                 Alert.alert('Login failed', response.message);
-    //                 console.log('Login failed', response.message);
-    //             }
-    //         } catch (error) {
-    //             console.log('Error storing user:', error);
-    //         }
-    //     } else {
-    //         console.log('Form validation failed');
-    //     }
-    // }
 
     return (
         <AuthProvider>
@@ -203,6 +179,53 @@ export default function RegisterScreen({navigation}: { navigation: BottomTabNavi
                                     <FormControlErrorText>
                                         {errors?.username?.message ||
                                             (!validated.usernameValid && "Email ID not found")}
+                                    </FormControlErrorText>
+                                </FormControlError>
+                            </FormControl>
+                            <FormControl
+                                isInvalid={!!errors.password || !validated.passwordValid}
+                                className="w-full"
+                            >
+                                <FormControlLabel>
+                                    <FormControlLabelText>Password</FormControlLabelText>
+                                </FormControlLabel>
+                                <Controller
+                                    defaultValue=""
+                                    name="password"
+                                    control={control}
+                                    rules={{
+                                        validate: async (value) => {
+                                            try {
+                                                await loginSchema.parseAsync({password: value});
+                                                return true;
+                                            } catch (error: any) {
+                                                return error.message;
+                                            }
+                                        },
+                                    }}
+                                    render={({field: {onChange, onBlur, value}}) => (
+                                        <Input>
+                                            <InputField
+                                                type={showPassword ? "text" : "password"}
+                                                placeholder="Enter password"
+                                                value={value}
+                                                onChangeText={onChange}
+                                                onBlur={onBlur}
+                                                onSubmitEditing={handleKeyPress}
+                                                returnKeyType="done"
+                                                style={{width: "100%", height: 50,}}
+                                            />
+                                            <InputSlot onPress={handleState} className="pr-3" style={{marginRight: 10}}>
+                                                <InputIcon as={showPassword ? EyeIcon : EyeOffIcon}/>
+                                            </InputSlot>
+                                        </Input>
+                                    )}
+                                />
+                                <FormControlError>
+                                    <FormControlErrorIcon as={AlertTriangle}/>
+                                    <FormControlErrorText>
+                                        {errors?.password?.message ||
+                                            (!validated.passwordValid && "Password was incorrect")}
                                     </FormControlErrorText>
                                 </FormControlError>
                             </FormControl>

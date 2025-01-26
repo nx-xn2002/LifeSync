@@ -2,6 +2,7 @@ package com.nx.lifesyncbackend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.nx.lifesyncbackend.common.BaseResponse;
+import com.nx.lifesyncbackend.model.dto.UserRegisterRequest;
 import com.nx.lifesyncbackend.model.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,7 +21,7 @@ public interface UserService extends IService<User> {
      * @param user user
      * @return {@link BaseResponse }<{@link ? }>
      */
-    Boolean register(User user);
+    Boolean register(UserRegisterRequest user);
 
     /**
      * login

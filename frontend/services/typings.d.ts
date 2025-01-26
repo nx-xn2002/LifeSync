@@ -18,6 +18,13 @@ declare namespace API {
         username?: string;
         password?: string;
     };
+    type  UserRegisterRequest = {
+        username?: string;
+        checkPassword?: string;
+        password?: string;
+        email?: string;
+    }
+
     type BaseResponseBasicHealth = {
         code?: number;
         data?: USER.BasicHealth;
@@ -30,5 +37,12 @@ declare namespace API {
         message?: string;
         description?: string;
     };
+    type BaseResponseBoolean = {
+        code?: number;
+        data?: boolean;
+        message?: string;
+        description?: string;
+    };
+
 }
 

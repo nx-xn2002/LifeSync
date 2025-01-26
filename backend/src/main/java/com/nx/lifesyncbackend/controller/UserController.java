@@ -4,6 +4,7 @@ import com.nx.lifesyncbackend.common.BaseResponse;
 import com.nx.lifesyncbackend.common.ErrorCode;
 import com.nx.lifesyncbackend.common.utils.ResultUtils;
 import com.nx.lifesyncbackend.model.dto.UserLoginRequest;
+import com.nx.lifesyncbackend.model.dto.UserRegisterRequest;
 import com.nx.lifesyncbackend.model.entity.User;
 import com.nx.lifesyncbackend.exception.BusinessException;
 import com.nx.lifesyncbackend.service.UserService;
@@ -26,7 +27,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public BaseResponse<Boolean> register(@RequestBody User user) {
+    public BaseResponse<Boolean> register(@RequestBody UserRegisterRequest user) {
         if (user == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

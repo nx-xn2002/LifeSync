@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nx.lifesyncbackend.common.ErrorCode;
 import com.nx.lifesyncbackend.common.utils.CheckUtils;
 import com.nx.lifesyncbackend.common.utils.SecurityUtils;
+import com.nx.lifesyncbackend.model.dto.UserRegisterRequest;
 import com.nx.lifesyncbackend.model.entity.User;
 import com.nx.lifesyncbackend.exception.BusinessException;
 import com.nx.lifesyncbackend.mapper.UserMapper;
@@ -31,12 +32,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private SecurityUtils securityUtils;
 
     @Override
-    public Boolean register(User user) {
+    public Boolean register(UserRegisterRequest user) {
         String username = user.getUsername();
         String password = user.getPassword();
         String email = user.getEmail();
+        String checkPassword = user.getCheckPassword();
         if (StringUtils.isAnyBlank(username, password)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "Username or password can't be null");
+        }
+        if(checkPassword.isEmpty()||!checkPassword.equals(password)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "Password and checkPassword should be the same");
         }
         if (!CheckUtils.isValidUsername(username)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "Invalid username!");
