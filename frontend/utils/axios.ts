@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const apiClient: Axios.AxiosInstance = axios.create({
-    baseURL: 'http://192.168.3.6:8888/api', // 设置你的 baseUrl
+    baseURL: 'http://192.168.125.165:8888/api',
     timeout: 10000, // 请求超时设置（可根据需要调整）
     headers: {
         'Content-Type': 'application/json',

@@ -31,7 +31,7 @@ import {
     VStack
 } from "@/components/ui";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {AlertTriangle} from "lucide-react-native";
+import Feather from '@expo/vector-icons/Feather';
 import {login} from "@/services/api";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
@@ -180,7 +180,8 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
                                     )}
                                 />
                                 <FormControlError>
-                                    <FormControlErrorIcon as={AlertTriangle}/>
+                                    <FormControlErrorIcon
+                                        as={() => <Feather name="alert-triangle" size={24} color="black"/>}/>
                                     <FormControlErrorText>
                                         {errors?.username?.message ||
                                             (!validated.usernameValid && "Email ID not found")}
@@ -227,7 +228,8 @@ export default function LoginScreen({navigation}: { navigation: BottomTabNavigat
                                     )}
                                 />
                                 <FormControlError>
-                                    <FormControlErrorIcon as={AlertTriangle}/>
+                                    <FormControlErrorIcon
+                                        as={() => <Feather name="alert-triangle" size={24} color="black"/>}/>
                                     <FormControlErrorText>
                                         {errors?.password?.message ||
                                             (!validated.passwordValid && "Password was incorrect")}

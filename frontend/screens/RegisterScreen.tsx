@@ -1,7 +1,7 @@
 import {Keyboard, SafeAreaView, StatusBar, StyleSheet} from 'react-native';
-import {useContext, useState} from "react";
+import {useState} from "react";
 import type {BottomTabNavigationHelpers} from "@react-navigation/bottom-tabs/src/types";
-import {AuthContext, AuthProvider} from "@/context/AuthContext";
+import {AuthProvider} from "@/context/AuthContext";
 import {Controller, useForm} from "react-hook-form";
 import {z} from "zod";
 import {Toast, ToastTitle, useToast} from "@/components/ui/toast";
@@ -32,44 +32,43 @@ import {
     VStack
 } from "@/components/ui";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {AlertTriangle} from "lucide-react-native";
-import {login} from "@/services/api";
+import Feather from '@expo/vector-icons/Feather';
+import {register} from "@/services/api";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
-const loginSchema = z.object({
-    //email: z.string().min(1, "Email is required").email(),
-    password: z.string().min(1, "Password is required"),
+const RegisterSchema = z.object({
     username: z.string().min(1, "Username is required"),
+    email: z.string().email(),
+    password: z
+        .string()
+        .min(6, "Must be at least 8 characters in length"),
+    checkPassword: z
+        .string()
+        .min(6, "Must be at least 8 characters in length"),
 });
 
-type LoginSchemaType = z.infer<typeof loginSchema>;
-
-///
+type RegisterSchemaType = z.infer<typeof RegisterSchema>;
 
 export default function RegisterScreen({navigation}: { navigation: BottomTabNavigationHelpers }) {
-    // const [username, setUsername] = useState('');
-    // const [password, setPassword] = useState('');
-    // const [errors, setErrors] = useState<ERROR.RegisterError>({});
-    const {storeUser} = useContext(AuthContext);
-
-    ///
     const {
         control,
         handleSubmit,
         reset,
         formState: {errors},
-    } = useForm<LoginSchemaType>({
-        resolver: zodResolver(loginSchema),
+    } = useForm<RegisterSchemaType>({
+        resolver: zodResolver(RegisterSchema),
     });
     const toast = useToast();
     const [validated, setValidated] = useState({
         usernameValid: true,
         passwordValid: true,
+        checkPasswordValid: true,
+        emailValid: true,
     });
 
-    const onSubmit = async (data: LoginSchemaType) => {
-        setValidated({usernameValid: true, passwordValid: true});
-        const response = await login(data);
+    const onSubmit = async (data: RegisterSchemaType) => {
+        setValidated({usernameValid: true, passwordValid: true, checkPasswordValid: true, emailValid: true});
+        const response = await register(data);
         if (response.data) {
             reset();
             toast.show({
@@ -77,20 +76,19 @@ export default function RegisterScreen({navigation}: { navigation: BottomTabNavi
                 render: ({id}) => {
                     return (
                         <Toast nativeID={id} variant="outline" action="success">
-                            <ToastTitle>Logged in successfully!</ToastTitle>
+                            <ToastTitle>Sign up successfully!</ToastTitle>
                         </Toast>
                     );
                 },
             });
-            storeUser(response.data);
-            navigation.navigate('MainTabs');
+            navigation.navigate('Login');
         } else {
             toast.show({
                 placement: "top",
                 render: ({id}) => {
                     return (
                         <Toast nativeID={id} variant="outline" action="error">
-                            <ToastTitle>Login failed!{response.description}</ToastTitle>
+                            <ToastTitle>Sign up failed!{response.description}</ToastTitle>
                         </Toast>
                     );
                 },
@@ -153,7 +151,7 @@ export default function RegisterScreen({navigation}: { navigation: BottomTabNavi
                                     rules={{
                                         validate: async (value) => {
                                             try {
-                                                await loginSchema.parseAsync({email: value});
+                                                await RegisterSchema.parseAsync({email: value});
                                                 return true;
                                             } catch (error: any) {
                                                 return error.message;
@@ -175,7 +173,8 @@ export default function RegisterScreen({navigation}: { navigation: BottomTabNavi
                                     )}
                                 />
                                 <FormControlError>
-                                    <FormControlErrorIcon as={AlertTriangle}/>
+                                    <FormControlErrorIcon
+                                        as={() => <Feather name="alert-triangle" size={24} color="black"/>}/>
                                     <FormControlErrorText>
                                         {errors?.username?.message ||
                                             (!validated.usernameValid && "Email ID not found")}
@@ -196,7 +195,7 @@ export default function RegisterScreen({navigation}: { navigation: BottomTabNavi
                                     rules={{
                                         validate: async (value) => {
                                             try {
-                                                await loginSchema.parseAsync({password: value});
+                                                await RegisterSchema.parseAsync({password: value});
                                                 return true;
                                             } catch (error: any) {
                                                 return error.message;
@@ -222,7 +221,8 @@ export default function RegisterScreen({navigation}: { navigation: BottomTabNavi
                                     )}
                                 />
                                 <FormControlError>
-                                    <FormControlErrorIcon as={AlertTriangle}/>
+                                    <FormControlErrorIcon
+                                        as={() => <Feather name="alert-triangle" size={24} color="black"/>}/>
                                     <FormControlErrorText>
                                         {errors?.password?.message ||
                                             (!validated.passwordValid && "Password was incorrect")}
@@ -230,20 +230,20 @@ export default function RegisterScreen({navigation}: { navigation: BottomTabNavi
                                 </FormControlError>
                             </FormControl>
                             <FormControl
-                                isInvalid={!!errors.password || !validated.passwordValid}
+                                isInvalid={!!errors.checkPassword || !validated.checkPasswordValid}
                                 className="w-full"
                             >
                                 <FormControlLabel>
-                                    <FormControlLabelText>Password</FormControlLabelText>
+                                    <FormControlLabelText>Check</FormControlLabelText>
                                 </FormControlLabel>
                                 <Controller
                                     defaultValue=""
-                                    name="password"
+                                    name="checkPassword"
                                     control={control}
                                     rules={{
                                         validate: async (value) => {
                                             try {
-                                                await loginSchema.parseAsync({password: value});
+                                                await RegisterSchema.parseAsync({checkPassword: value});
                                                 return true;
                                             } catch (error: any) {
                                                 return error.message;
@@ -254,7 +254,7 @@ export default function RegisterScreen({navigation}: { navigation: BottomTabNavi
                                         <Input>
                                             <InputField
                                                 type={showPassword ? "text" : "password"}
-                                                placeholder="Enter password"
+                                                placeholder="Check Your Password"
                                                 value={value}
                                                 onChangeText={onChange}
                                                 onBlur={onBlur}
@@ -269,10 +269,55 @@ export default function RegisterScreen({navigation}: { navigation: BottomTabNavi
                                     )}
                                 />
                                 <FormControlError>
-                                    <FormControlErrorIcon as={AlertTriangle}/>
+                                    <FormControlErrorIcon
+                                        as={() => <Feather name="alert-triangle" size={24} color="black"/>}/>
                                     <FormControlErrorText>
-                                        {errors?.password?.message ||
-                                            (!validated.passwordValid && "Password was incorrect")}
+                                        {errors?.checkPassword?.message ||
+                                            (!validated.checkPasswordValid && "Password was incorrect")}
+                                    </FormControlErrorText>
+                                </FormControlError>
+                            </FormControl>
+                            <FormControl
+                                isInvalid={!!errors.email || !validated.emailValid}
+                                className="w-full"
+                            >
+                                <FormControlLabel>
+                                    <FormControlLabelText>Email(Optional)</FormControlLabelText>
+                                </FormControlLabel>
+                                <Controller
+                                    defaultValue=""
+                                    name="email"
+                                    control={control}
+                                    rules={{
+                                        validate: async (value) => {
+                                            try {
+                                                await RegisterSchema.parseAsync({email: value});
+                                                return true;
+                                            } catch (error: any) {
+                                                return error.message;
+                                            }
+                                        },
+                                    }}
+                                    render={({field: {onChange, onBlur, value}}) => (
+                                        <Input>
+                                            <InputField
+                                                // type={showPassword ? "text" : "password"}
+                                                placeholder="You can use your email to reset the password"
+                                                value={value}
+                                                onChangeText={onChange}
+                                                onBlur={onBlur}
+                                                onSubmitEditing={handleKeyPress}
+                                                returnKeyType="done"
+                                                style={{width: "100%", height: 50,}}
+                                            />
+                                        </Input>
+                                    )}
+                                />
+                                <FormControlError>
+                                    <FormControlErrorIcon size="md" as={() => <Feather name="alert-triangle" size={24}
+                                                                                       color="black"/>}/>
+                                    <FormControlErrorText>
+                                        {errors?.email?.message}
                                     </FormControlErrorText>
                                 </FormControlError>
                             </FormControl>
@@ -289,7 +334,7 @@ export default function RegisterScreen({navigation}: { navigation: BottomTabNavi
                         {/*注册按钮*/}
                         <VStack className="w-full my-7 " space="lg" style={{paddingTop: 20}}>
                             <Button className="w-full" onPress={handleSubmit(onSubmit)}>
-                                <ButtonText className="font-medium">Log in</ButtonText>
+                                <ButtonText className="font-medium">Sign up</ButtonText>
                             </Button>
                             <Button
                                 variant="outline"

@@ -19,12 +19,6 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
     const [user, setUser] = useState<USER.UserInfo>({
         username: '',
         email: '',
-        basicHealth: {
-            height: 0,
-            weight: 0,
-            age: 0,
-            gender: '',
-        }
     });
 
     // 从 SecureStore 获取用户信息
@@ -45,12 +39,6 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
                 ...user,
                 username: newUser.username || user.username,
                 email: newUser.email || user.email,
-                basicHealth: {
-                    height: newUser.basicHealth?.height ?? user.basicHealth.height,
-                    weight: newUser.basicHealth?.weight ?? user.basicHealth.weight,
-                    age: newUser.basicHealth?.age ?? user.basicHealth.age,
-                    gender: newUser.basicHealth?.gender || user.basicHealth.gender,
-                },
             };
             await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
             setUser(updatedUser);

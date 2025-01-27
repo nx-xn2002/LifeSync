@@ -8,7 +8,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * web mvc config
  *
  * @author nx-xn2002
- * @date 2025-01-18
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -17,8 +16,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         // 覆盖所有请求
         registry.addMapping("/**")
-                // 允许发送 Cookie
-                .allowCredentials(true)
                 // 放行哪些域名（必须用 patterns，否则 * 会和 allowCredentials 冲突）
                 .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")

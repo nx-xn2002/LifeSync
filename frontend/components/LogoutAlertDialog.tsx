@@ -15,6 +15,7 @@ import {
     AlertDialogFooter,
 } from "./ui";
 import {AuthContext} from "@/context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LogoutAlertDialog = ({
                                openLogoutAlertDialog,
@@ -26,10 +27,11 @@ const LogoutAlertDialog = ({
         setOpenLogoutAlertDialog(false);
     };
     const {user, storeUser} = useContext(AuthContext);
-    const userLogout = () => {
+    const userLogout = async () => {
         user.username = ''
         user.password = ''
         storeUser(user);
+        await AsyncStorage.setItem('token', undefined);
         setOpenLogoutAlertDialog(false);
         navigation.navigate('Login');
     }
