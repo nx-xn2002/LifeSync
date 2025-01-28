@@ -9,7 +9,6 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import md5 from "md5"
 import BasicHealthModal from "@/components/BasicHealthModal";
-import globalStyles from "@/components/GlobalStyles";
 
 export default function ProfileScreen({navigation}: { navigation: BottomTabNavigationHelpers }) {
     const {user, storeUser} = useContext(AuthContext);

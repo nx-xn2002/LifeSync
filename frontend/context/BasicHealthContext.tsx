@@ -1,5 +1,8 @@
 import React, {createContext, ReactNode, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {View} from "react-native";
+import {HStack, Icon, Pressable, Text, VStack} from "@/components/ui";
+import AntDesign from "@expo/vector-icons/AntDesign";
 
 // 定义 BasicHealthContext 的值类型
 interface BasicHealthContextType {

@@ -10,7 +10,7 @@ declare namespace USER {
         height?: number;
         weight?: number;
         age?: number;
-        gender?: string;
+        gender?: number;
     };
 }
 declare namespace API {

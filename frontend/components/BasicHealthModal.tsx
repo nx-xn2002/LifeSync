@@ -1,13 +1,7 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect} from "react";
 import {
     Box,
-    Button,
-    ButtonText,
-    CircleIcon,
     CloseIcon,
-    FormControl,
-    FormControlLabel,
-    FormControlLabelText,
     Heading,
     HStack,
     Icon,
@@ -17,27 +11,16 @@ import {
     ModalCloseButton,
     ModalContent,
     ModalHeader,
-    Radio,
-    RadioGroup,
-    RadioIcon,
-    RadioIndicator,
-    RadioLabel,
+    Pressable,
+    Text,
     VStack,
 } from "./ui";
-import {AuthContext} from "@/context/AuthContext";
 import {BasicHealthContext} from "@/context/BasicHealthContext";
-import {selectBasicHealth} from "@/services/api";
+import {selectBasicHealth, updateBasicHealth} from "@/services/api";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-
-const propertyType = [
-    "Flat/Apartment",
-    "Independent House / Villa",
-    "Independent Floor/Builder Floor",
-    "Plot / Land",
-];
-const sellOrRentOptions = ["Sell", "Rent/Lease"];
-
-const BasicHealthModal = ({modalVisible, setModalVisible}: any) => {
+export default function BasicHealthModal({modalVisible, setModalVisible}: any) {
     const {basicHealth, storeBasicHealth} = useContext(BasicHealthContext);
     const fetchData = async () => {
         try {
@@ -49,9 +32,26 @@ const BasicHealthModal = ({modalVisible, setModalVisible}: any) => {
             console.error("Error fetching basic health data:", error);
         }
     };
+    const updateTest = async () => {
+        try {
+            const response = await updateBasicHealth({
+                height: 150,
+                weight: 80,
+                age: 18,
+                gender: 0,
+            });
+            if (response.data) {
+                console.log("update basic health data:", response.data);
+            }
+        } catch (error) {
+            console.error("Error fetching basic health data:", error);
+        }
+    }
     useEffect(() => {
         if (modalVisible) {
             fetchData();
+        } else {
+            updateTest();
         }
     }, [modalVisible]);
 
@@ -82,115 +82,72 @@ const BasicHealthModal = ({modalVisible, setModalVisible}: any) => {
                         </ModalCloseButton>
                     </ModalHeader>
                     <ModalBody className="mb-0">
-                        <ModalContent1/>
+                        <VStack space="md">
+                            <VStack space="lg">
+                                <Pressable>
+                                    <HStack className="justify-between">
+                                        <HStack space="md">
+                                            <Icon
+                                                as={() => <MaterialCommunityIcons name="human-male-height" size={24}
+                                                                                  color="black"/>}/>
+                                            <Text>Height</Text>
+                                        </HStack>
+                                        <HStack>
+                                            <Text>{basicHealth?.height}</Text>
+                                        </HStack>
+                                    </HStack>
+                                </Pressable>
+                                <Pressable>
+                                    <HStack className="justify-between">
+                                        <HStack space="md">
+                                            <Icon as={() => <MaterialCommunityIcons name="weight-kilogram" size={24}
+                                                                                    color="black"/>}/>
+                                            <Text>Weight</Text>
+                                        </HStack>
+                                        <HStack>
+                                            <Text>{basicHealth?.weight}</Text>
+                                        </HStack>
+                                    </HStack>
+                                </Pressable>
+                                <Pressable>
+                                    <HStack className="justify-between">
+                                        <HStack space="md">
+                                            <Icon as={() => <MaterialCommunityIcons name="human-handsup" size={24}
+                                                                                    color="black"/>}/>
+                                            <Text>Age</Text>
+                                        </HStack>
+                                        <HStack>
+                                            <Text>{basicHealth?.age}</Text>
+                                        </HStack>
+                                    </HStack>
+                                </Pressable>
+                                <Pressable>
+                                    <HStack className="justify-between">
+                                        <HStack space="md">
+                                            <Icon as={() => {
+                                                if (basicHealth?.gender === 0) {
+                                                    return <MaterialCommunityIcons name="gender-male" size={24}
+                                                                                   color="black"/>
+                                                } else if (basicHealth?.gender === 1) {
+                                                    return <MaterialCommunityIcons name="gender-female" size={24}
+                                                                                   color="black"/>
+                                                } else {
+                                                    return <MaterialIcons name="question-mark" size={24} color="black"/>
+                                                }
+                                            }}
+                                            />
+                                            <Text>Gender</Text>
+                                        </HStack>
+                                        <HStack>
+                                            <Text>{basicHealth?.gender}</Text>
+                                        </HStack>
+                                    </HStack>
+                                </Pressable>
+                            </VStack>
+                        </VStack>
                     </ModalBody>
                 </ModalContent>
             </Modal>
         </Box>
     );
 };
-
-const ModalContent1 = () => {
-    const [values, setValues]: any = React.useState("Residential");
-    const [selectedSellOrRentOption, setSelectedSellOrRentOption] = useState(
-        sellOrRentOptions[0]
-    );
-    const [selectedPropertyTypeOptions, setSelectedPropertyTypeOptions]: any =
-        useState([]);
-    const colorMode = "light";
-
-    const handlePropertyTypeSelection = (item: any) => {
-        if (selectedPropertyTypeOptions.includes(item)) {
-            setSelectedPropertyTypeOptions(
-                selectedPropertyTypeOptions.filter((option: string) => option !== item)
-            );
-        } else {
-            setSelectedPropertyTypeOptions([...selectedPropertyTypeOptions, item]);
-        }
-    };
-    return (
-        <VStack space="md">
-            <VStack space="sm">
-                <FormControl>
-                    <FormControlLabel>
-                        <FormControlLabelText>I want to...</FormControlLabelText>
-                    </FormControlLabel>
-                    <HStack space="sm">
-                        {sellOrRentOptions.map((item, index) => (
-                            <Button
-                                key={index}
-                                action={
-                                    item === selectedSellOrRentOption ? "primary" : "secondary"
-                                }
-                                variant="outline"
-                                size="xs"
-                                onPress={() => {
-                                    setSelectedSellOrRentOption(item);
-                                }}
-                                className="rounded-full mb-2"
-                            >
-                                <ButtonText>{item}</ButtonText>
-                            </Button>
-                        ))}
-                    </HStack>
-                </FormControl>
-            </VStack>
-            <VStack space="md">
-                <VStack space="sm">
-                    <FormControl>
-                        <FormControlLabel>
-                            <FormControlLabelText>Property is...</FormControlLabelText>
-                        </FormControlLabel>
-                        <RadioGroup
-                            value={values}
-                            onChange={setValues}
-                            accessibilityLabel="place-type"
-                        >
-                            <HStack space="md">
-                                <Radio value="Residential">
-                                    <RadioIndicator>
-                                        <RadioIcon
-                                            as={CircleIcon}
-                                            color={colorMode === "light" ? "#292929" : "#FAFAFA"}
-                                        />
-                                    </RadioIndicator>
-                                    <RadioLabel>Residential</RadioLabel>
-                                </Radio>
-                                <Radio value="Commercial">
-                                    <RadioIndicator>
-                                        <RadioIcon
-                                            as={CircleIcon}
-                                            color={colorMode === "light" ? "#292929" : "#FAFAFA"}
-                                        />
-                                    </RadioIndicator>
-                                    <RadioLabel>Commercial</RadioLabel>
-                                </Radio>
-                            </HStack>
-                        </RadioGroup>
-                    </FormControl>
-                </VStack>
-                <HStack space="sm" className="flex-wrap">
-                    {propertyType.map((item: string, index: any) => (
-                        <Button
-                            key={index}
-                            action={
-                                selectedPropertyTypeOptions.includes(item)
-                                    ? "primary"
-                                    : "secondary"
-                            }
-                            variant="outline"
-                            size="xs"
-                            onPress={() => {
-                                handlePropertyTypeSelection(item);
-                            }}
-                            className="rounded-full mb-2 hover:bg-background-200"
-                        >
-                            <ButtonText>{item}</ButtonText>
-                        </Button>
-                    ))}
-                </HStack>
-            </VStack>
-        </VStack>
-    );
-};
-export default BasicHealthModal;

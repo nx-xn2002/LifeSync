@@ -17,3 +17,9 @@ export async function selectBasicHealth(): Promise<API.BaseResponseBasicHealth> 
     const response = await apiClient.get('/basic_health/select');
     return response.data;
 }
+
+/** 更新基本健康信息接口 POST /basic_health/update */
+export async function updateBasicHealth(body: USER.BasicHealth): Promise<API.BaseResponseBoolean> {
+    const response = await apiClient.post('/basic_health/update', body);
+    return response.data;
+}

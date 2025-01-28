@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
  * basic health controller
  *
  * @author nx-xn2002
- * @date 2025-01-12
  */
 @RestController
 @RequestMapping("/basic_health")
