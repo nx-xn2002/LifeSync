@@ -44,7 +44,7 @@ public class SecurityUtils {
     public String getUserJwt(User user) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("user", user);
-        map.put("expire_time", (Long) (System.currentTimeMillis() + expire));
+        map.put("expire_time", System.currentTimeMillis() + expire);
         return JWTUtil.createToken(map, salt.getBytes());
     }
 

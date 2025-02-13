@@ -1,51 +1,167 @@
 import {Dimensions, StatusBar, StyleSheet, Text, View} from "react-native";
 import type {BottomTabNavigationHelpers} from "@react-navigation/bottom-tabs/src/types";
 import {Button, ButtonText} from "@/components/ui";
-import {useState} from "react";
-import {CameraType, CameraView, useCameraPermissions} from "expo-camera";
+import {useEffect, useRef, useState} from "react";
+import {CameraView, useCameraPermissions} from "expo-camera";
 
+
+//TODO:解决摄像头不渲染的问题
 export default function MonitorScreen({navigation}: { navigation: BottomTabNavigationHelpers }) {
     const [permission, requestPermission] = useCameraPermissions();
-    if (!permission) {
-        return <View/>;
-    }
+    const [countdown, setCountdown] = useState<number | null>(null);  // 初始倒计时
+    const [isRecording, setIsRecording] = useState(false);
+    const [pictures, setPictures] = useState<string[]>([]);  // 用于保存拍摄的图片
+    const [recordingTime, setRecordingTime] = useState(30);  // 录制倒计时（30秒）
+    const cameraRef = useRef<CameraView>(null);
+
+    // 倒计时并开始拍照
+    const startRecordingWithCountdown = async () => {
+        if (!permission.granted) {
+            // 如果没有权限，请求权限
+            const {status} = await requestPermission();
+            if (status !== 'granted') {
+                alert("Permission to access the camera is required!");
+                return; // 如果用户拒绝权限，则不继续执行
+            }
+        }
+
+        // 权限获取后，开始倒计时
+        setCountdown(3); // 设置倒计时为 3 秒
+
+        const interval = setInterval(() => {
+            setCountdown(prev => {
+                if (prev === 1) {
+                    clearInterval(interval);
+                    setCountdown(null);
+                    startRecording(); // 计时结束后开始拍照
+                }
+                return prev ? prev - 1 : null;
+            });
+        }, 1000);
+    };
+
+    // 开始拍照
+    const startRecording = async () => {
+        if (!cameraRef.current) return;
+        setIsRecording(true);
+        setPictures([]); // 清空之前的图片列表
+        setRecordingTime(30); // 初始化录制倒计时为 30 秒
+
+        // 按时间间隔拍摄照片（每 0.1 秒拍摄一次，持续 30 秒）
+        const totalDuration = 30 * 1000;  // 30秒
+        const intervalTime = 100; // 0.1 秒
+        const intervalCount = totalDuration / intervalTime;
+
+        let capturedPictures: string[] = [];
+
+        for (let i = 0; i < intervalCount; i++) {
+            if (cameraRef.current) {
+                try {
+                    const picture = await cameraRef.current.takePictureAsync();
+                    capturedPictures.push(picture.base64);  // 使用 base64 格式（web & android）
+                } catch (error) {
+                    console.error("Picture capture failed:", error);
+                    break;  // 如果捕捉失败，停止拍摄
+                }
+            }
+            await new Promise(resolve => setTimeout(resolve, intervalTime));  // 每 0.1 秒拍摄一次
+
+            // 更新剩余时间倒计时
+            setRecordingTime(prevTime => (prevTime > 0 ? prevTime - 0.1 : 0));
+        }
+
+        setPictures(capturedPictures); // 设置捕获的图片
+        setIsRecording(false);
+        uploadPictures(capturedPictures, 'android'); // 上传图片时传入 'android' 或 'web'
+    };
+
+    // 上传图片（你自己实现）
+    const uploadPictures = (capturedPictures: string[], platform: 'android' | 'web') => {
+        console.log("Uploading pictures from", platform, ":", capturedPictures.length, "images");
+        // 在这里实现上传逻辑
+    };
+
+    // 取消录制
+    const stopRecording = async () => {
+        setIsRecording(false);
+        setPictures([]);  // 取消录制时清空图片列表
+    };
+
+    // 控制摄像头的开启与关闭
+    const cameraComponent = isRecording ? (
+        <CameraView ref={cameraRef} style={styles.camera} facing="back" mute={true}/>
+    ) : null; // 录制时才显示 CameraView
+
+    if (!permission) return <View/>;
 
     return (
         <View style={styles.container}>
             <Text style={styles.text}>Monitor Screen</Text>
-            <View style={{
-                backgroundColor: 'black',
-                width: Dimensions.get('window').width * 0.5,
-                height: Dimensions.get('window').width * 0.5,
-                borderRadius: Dimensions.get('window').width * 0.5,
-            }}>
-                <CameraView style={styles.camera} facing={'back'}>
-                </CameraView>
+
+            {/* 圆形相机视图 */}
+            <View style={styles.cameraContainer}>
+                {cameraComponent}
             </View>
-            <Button onPress={requestPermission}>
-                <ButtonText>
-                    Start Camera
-                </ButtonText>
+
+            {/* 倒计时显示 */}
+            {countdown !== null && (
+                <Text style={styles.countdownText}>{countdown}</Text>
+            )}
+
+            {/* 录制倒计时显示 */}
+            {isRecording && recordingTime > 0 && (
+                <Text style={styles.recordingTimeText}>
+                    Recording Time Left: {Math.floor(recordingTime)}s
+                </Text>
+            )}
+
+            {/* 录制按钮 */}
+            <Button onPress={startRecordingWithCountdown} disabled={isRecording || countdown !== null}>
+                <ButtonText>{isRecording ? "Recording..." : "Start Recording"}</ButtonText>
             </Button>
+
+            {/* 停止录制按钮 */}
+            {isRecording && (
+                <Button onPress={stopRecording}>
+                    <ButtonText>Stop Recording</ButtonText>
+                </Button>
+            )}
         </View>
     );
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
         paddingTop: StatusBar.currentHeight,
-    }, text: {
+    },
+    text: {
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 20,
-    }, camera: {
-        flex: 1
     },
-    button: {
+    cameraContainer: {
+        width: Dimensions.get('window').width * 0.5,
+        height: Dimensions.get('window').width * 0.5,
+        borderRadius: Dimensions.get('window').width * 0.5,
+        overflow: 'hidden', // 关键：隐藏超出边界的部分，使其呈现圆形
+        backgroundColor: 'black',
+    },
+    camera: {
         flex: 1,
-        alignSelf: 'flex-end',
-        alignItems: 'center',
+    },
+    countdownText: {
+        fontSize: 40,
+        fontWeight: 'bold',
+        color: 'red',
+        marginTop: 10,
+    },
+    recordingTimeText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'green',
+        marginTop: 10,
     },
 });
