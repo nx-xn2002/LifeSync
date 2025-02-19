@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
  * user controller
  *
  * @author nx-xn2002
- * @date 2025-01-04
  */
 @RestController
 @RequestMapping("/user")
@@ -46,7 +45,7 @@ public class UserController {
         if (StringUtils.isAnyBlank(username, password)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User result = userService.login(username, password, request,response);
+        User result = userService.login(username, password, request, response);
         return ResultUtils.success(result);
     }
 

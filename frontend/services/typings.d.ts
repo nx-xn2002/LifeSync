@@ -24,6 +24,9 @@ declare namespace API {
         password?: string;
         email?: string;
     }
+    type  HeartRateRequest = {
+        images?: string[]
+    }
 
     type BaseResponseBasicHealth = {
         code?: number;
@@ -43,6 +46,11 @@ declare namespace API {
         message?: string;
         description?: string;
     };
-
+    type BaseResponseDouble = {
+        code?: number;
+        data?: number;
+        message?: string;
+        description?: string;
+    };
 }
 

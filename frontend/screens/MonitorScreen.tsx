@@ -3,6 +3,7 @@ import type {BottomTabNavigationHelpers} from "@react-navigation/bottom-tabs/src
 import {Button, ButtonText} from "@/components/ui";
 import {useEffect, useRef, useState} from "react";
 import {CameraView, useCameraPermissions} from "expo-camera";
+import {analyse} from "@/services/api";
 
 
 //TODO:解决摄像头不渲染的问题
@@ -11,7 +12,7 @@ export default function MonitorScreen({navigation}: { navigation: BottomTabNavig
     const [countdown, setCountdown] = useState<number | null>(null);  // 初始倒计时
     const [isRecording, setIsRecording] = useState(false);
     const [pictures, setPictures] = useState<string[]>([]);  // 用于保存拍摄的图片
-    const [recordingTime, setRecordingTime] = useState(30);  // 录制倒计时（30秒）
+    const [recordingTime, setRecordingTime] = useState(10);  // 录制倒计时（10秒）
     const cameraRef = useRef<CameraView>(null);
 
     // 倒计时并开始拍照
@@ -42,6 +43,7 @@ export default function MonitorScreen({navigation}: { navigation: BottomTabNavig
 
     // 开始拍照
     const startRecording = async () => {
+        console.log("准备开始拍照");
         if (!cameraRef.current) return;
         setIsRecording(true);
         setPictures([]); // 清空之前的图片列表
@@ -53,7 +55,7 @@ export default function MonitorScreen({navigation}: { navigation: BottomTabNavig
         const intervalCount = totalDuration / intervalTime;
 
         let capturedPictures: string[] = [];
-
+        console.log("正在开始拍照");
         for (let i = 0; i < intervalCount; i++) {
             if (cameraRef.current) {
                 try {
@@ -76,9 +78,12 @@ export default function MonitorScreen({navigation}: { navigation: BottomTabNavig
     };
 
     // 上传图片（你自己实现）
-    const uploadPictures = (capturedPictures: string[], platform: 'android' | 'web') => {
+    const uploadPictures = async (capturedPictures: string[], platform: 'android' | 'web') => {
         console.log("Uploading pictures from", platform, ":", capturedPictures.length, "images");
         // 在这里实现上传逻辑
+        const response = await analyse({images: capturedPictures});
+        console.log(response.data);
+        console.log("message", response.message)
     };
 
     // 取消录制
@@ -88,10 +93,11 @@ export default function MonitorScreen({navigation}: { navigation: BottomTabNavig
     };
 
     // 控制摄像头的开启与关闭
-    const cameraComponent = isRecording ? (
+    // const cameraComponent = isRecording ? (
+    //     <CameraView ref={cameraRef} style={styles.camera} facing="back" mute={true}/>
+    // ) : null;
+    const cameraComponent =
         <CameraView ref={cameraRef} style={styles.camera} facing="back" mute={true}/>
-    ) : null; // 录制时才显示 CameraView
-
     if (!permission) return <View/>;
 
     return (
