@@ -1,5 +1,11 @@
 package com.nx.lifesyncbackend.common.utils;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Base64;
+import javax.imageio.ImageIO;
+
 /**
  * image processing
  *
@@ -7,81 +13,32 @@ package com.nx.lifesyncbackend.common.utils;
  */
 public class ImageProcessing {
 
-    private static int decodeYUV420SPtoRedBlueGreenSum(byte[] yuv420sp, int width, int height, int type) {
-        if (yuv420sp == null) {
-            return 0;
-        }
+    public static RgbAvg processBase64Image(String base64Image) throws IOException {
+        // 移除base64字符串的前缀
+        String base64Data = base64Image.replaceAll("^data:image/\\w+;base64,", "");
 
-        final int frameSize = width * height;
+        // 解码base64为字节数组
+        byte[] imageBytes = Base64.getDecoder().decode(base64Data);
 
-        int sum = 0;
-        int sumr = 0;
-        int sumg = 0;
-        int sumb = 0;
-        for (int j = 0, yp = 0; j < height; j++) {
-            int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
-            for (int i = 0; i < width; i++, yp++) {
-                int y = (0xff & yuv420sp[yp]) - 16;
-                if (y < 0) {
-                    y = 0;
-                }
-                if ((i & 1) == 0) {
-                    v = (0xff & yuv420sp[uvp++]) - 128;
-                    u = (0xff & yuv420sp[uvp++]) - 128;
-                }
-                int y1192 = 1192 * y;
-                int r = (y1192 + 1634 * v);
-                int g = (y1192 - 833 * v - 400 * u);
-                int b = (y1192 + 2066 * u);
+        // 转换为BufferedImage
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
 
-                if (r < 0) r = 0;
-                else if (r > 262143) r = 262143;
-                if (g < 0) g = 0;
-                else if (g > 262143) g = 262143;
-                if (b < 0) b = 0;
-                else if (b > 262143) b = 262143;
-
-                int pixel = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
-                int red = (pixel >> 16) & 0xff;
-                int green = (pixel >> 8) & 0xff;
-                int blue = pixel & 0xff;
-                sumr += red;
-                sumg += green;
-                sumb += blue;
+        // 计算RGB平均值
+        int width = image.getWidth();
+        int height = image.getHeight();
+        long redSum = 0, greenSum = 0, blueSum = 0;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int rgb = image.getRGB(x, y);
+                redSum += (rgb >> 16) & 0xff;
+                greenSum += (rgb >> 8) & 0xff;
+                blueSum += rgb & 0xff;
             }
         }
-        switch (type) {
-            case (1):
-                sum = sumr;
-                break;
-            case (2):
-                sum = sumb;
-                break;
-            case (3):
-                sum = sumg;
-                break;
-        }
-        return sum;
+        int pixelCount = width * height;
+        return new RgbAvg((double) redSum / pixelCount, (double) greenSum / pixelCount, (double) blueSum / pixelCount);
     }
 
-    /**
-     * Given a byte array representing a yuv420sp image, determine the average
-     * amount of red in the image. Note: returns 0 if the byte array is NULL.
-     *
-     * @param yuv420sp Byte array representing a yuv420sp image
-     * @param width    Width of the image.
-     * @param height   Height of the image.
-     * @return int representing the average amount of red in the image.
-     */
-    public static double decodeYUV420SPtoRedBlueGreenAvg(byte[] yuv420sp, int width, int height, int type) {
-        if (yuv420sp == null) {
-            return 0;
-        }
-        final int frameSize = width * height;
-
-        int sum = decodeYUV420SPtoRedBlueGreenSum(yuv420sp, width, height, type);
-
-        return (sum / frameSize);
+    public static record RgbAvg(double r, double g, double b) {
     }
 }
-

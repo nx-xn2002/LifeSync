@@ -27,10 +27,6 @@ export async function updateBasicHealth(body: USER.BasicHealth): Promise<API.Bas
 
 /** 检测接口 POST /monitor/analyse */
 export async function analyse(body: API.HeartRateRequest): Promise<API.BaseResponseDouble> {
-    const response = await apiClient.post('/monitor/analyse', body, {
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
+    const response = await apiClient.post('/monitor/analyse', body);
     return response.data;
 }

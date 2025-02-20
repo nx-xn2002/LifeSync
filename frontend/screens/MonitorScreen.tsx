@@ -6,7 +6,6 @@ import {CameraView, useCameraPermissions} from "expo-camera";
 import {analyse} from "@/services/api";
 
 
-//TODO:解决摄像头不渲染的问题
 export default function MonitorScreen({navigation}: { navigation: BottomTabNavigationHelpers }) {
     const [permission, requestPermission] = useCameraPermissions();
     const [countdown, setCountdown] = useState<number | null>(null);  // 初始倒计时
@@ -73,13 +72,12 @@ export default function MonitorScreen({navigation}: { navigation: BottomTabNavig
         }
 
         setPictures(capturedPictures); // 设置捕获的图片
+        console.log("图片数量：", capturedPictures.length);
         setIsRecording(false);
-        uploadPictures(capturedPictures, 'android'); // 上传图片时传入 'android' 或 'web'
+        uploadPictures(capturedPictures)
     };
 
-    // 上传图片（你自己实现）
-    const uploadPictures = async (capturedPictures: string[], platform: 'android' | 'web') => {
-        console.log("Uploading pictures from", platform, ":", capturedPictures.length, "images");
+    const uploadPictures = async (capturedPictures: string[]) => {
         // 在这里实现上传逻辑
         const response = await analyse({images: capturedPictures});
         console.log(response.data);
