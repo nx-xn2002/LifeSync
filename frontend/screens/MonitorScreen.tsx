@@ -1,24 +1,23 @@
-import {Dimensions, StatusBar, StyleSheet, Text, View} from "react-native";
-import type {BottomTabNavigationHelpers} from "@react-navigation/bottom-tabs/src/types";
-import {Button, ButtonText} from "@/components/ui";
-import {useEffect, useRef, useState} from "react";
-import {CameraView, useCameraPermissions} from "expo-camera";
-import {analyse} from "@/services/api";
+import { Dimensions, StatusBar, StyleSheet, Text, View } from "react-native";
+import type { BottomTabNavigationHelpers } from "@react-navigation/bottom-tabs/src/types";
+import { Button, ButtonText } from "@/components/ui";
+import { useEffect, useRef, useState } from "react";
+import { CameraView, useCameraPermissions } from "expo-camera";
+import { analyse } from "@/services/api";
 
-
-export default function MonitorScreen({navigation}: { navigation: BottomTabNavigationHelpers }) {
+export default function MonitorScreen({ navigation }: { navigation: BottomTabNavigationHelpers }) {
     const [permission, requestPermission] = useCameraPermissions();
-    const [countdown, setCountdown] = useState<number | null>(null);  // 初始倒计时
+    const [countdown, setCountdown] = useState<number | null>(null); // 初始倒计时
     const [isRecording, setIsRecording] = useState(false);
-    const [pictures, setPictures] = useState<string[]>([]);  // 用于保存拍摄的图片
-    const [recordingTime, setRecordingTime] = useState(10);  // 录制倒计时（10秒）
+    const [pictures, setPictures] = useState<string[]>([]); // 用于保存拍摄的图片
+    const [recordingTime, setRecordingTime] = useState(10); // 录制倒计时（10秒）
     const cameraRef = useRef<CameraView>(null);
 
     // 倒计时并开始拍照
     const startRecordingWithCountdown = async () => {
         if (!permission.granted) {
             // 如果没有权限，请求权限
-            const {status} = await requestPermission();
+            const { status } = await requestPermission();
             if (status !== 'granted') {
                 alert("Permission to access the camera is required!");
                 return; // 如果用户拒绝权限，则不继续执行
@@ -48,40 +47,51 @@ export default function MonitorScreen({navigation}: { navigation: BottomTabNavig
         setPictures([]); // 清空之前的图片列表
         setRecordingTime(30); // 初始化录制倒计时为 30 秒
 
-        // 按时间间隔拍摄照片（每 0.1 秒拍摄一次，持续 30 秒）
+        // 按时间间隔拍摄照片（持续 30 秒）
         const totalDuration = 30 * 1000;  // 30秒
         const intervalTime = 100; // 0.1 秒
         const intervalCount = totalDuration / intervalTime;
 
         let capturedPictures: string[] = [];
+        let lastUpdateTime = 0; // 用于倒计时更新的时间控制
+        const updateInterval = 500; // 500ms 更新一次倒计时
+
         console.log("正在开始拍照");
         for (let i = 0; i < intervalCount; i++) {
             if (cameraRef.current) {
                 try {
-                    const picture = await cameraRef.current.takePictureAsync();
-                    capturedPictures.push(picture.base64);  // 使用 base64 格式（web & android）
+                    const picture = await cameraRef.current.takePictureAsync({
+                        quality: 0.5, // 控制图片质量，范围 0.0 - 1.0，0.5 是中等质量
+                        base64: true, // 保留 base64 格式
+                    });
+                    capturedPictures.push(picture.base64!); // 使用 base64 格式保存图片
                 } catch (error) {
                     console.error("Picture capture failed:", error);
                     break;  // 如果捕捉失败，停止拍摄
                 }
             }
-            await new Promise(resolve => setTimeout(resolve, intervalTime));  // 每 0.1 秒拍摄一次
 
-            // 更新剩余时间倒计时
-            setRecordingTime(prevTime => (prevTime > 0 ? prevTime - 0.1 : 0));
+            // 每隔一定时间更新倒计时
+            const currentTime = Date.now();
+            if (currentTime - lastUpdateTime > updateInterval) {
+                setRecordingTime(prevTime => (prevTime > 0 ? prevTime - 0.1 : 0));
+                lastUpdateTime = currentTime;
+            }
+
+            await new Promise(resolve => setTimeout(resolve, intervalTime));  // 每 0.1 秒拍摄一次
         }
 
         setPictures(capturedPictures); // 设置捕获的图片
         console.log("图片数量：", capturedPictures.length);
         setIsRecording(false);
-        uploadPictures(capturedPictures)
+        uploadPictures(capturedPictures);
     };
 
     const uploadPictures = async (capturedPictures: string[]) => {
         // 在这里实现上传逻辑
-        const response = await analyse({images: capturedPictures});
+        const response = await analyse({ images: capturedPictures });
         console.log(response.data);
-        console.log("message", response.message)
+        console.log("message", response.message);
     };
 
     // 取消录制
@@ -90,13 +100,9 @@ export default function MonitorScreen({navigation}: { navigation: BottomTabNavig
         setPictures([]);  // 取消录制时清空图片列表
     };
 
-    // 控制摄像头的开启与关闭
-    // const cameraComponent = isRecording ? (
-    //     <CameraView ref={cameraRef} style={styles.camera} facing="back" mute={true}/>
-    // ) : null;
     const cameraComponent =
-        <CameraView ref={cameraRef} style={styles.camera} facing="back" mute={true}/>
-    if (!permission) return <View/>;
+        <CameraView ref={cameraRef} style={styles.camera} facing="back" mute={true} animateShutter={false}/>;
+    if (!permission) return <View />;
 
     return (
         <View style={styles.container}>
