@@ -105,4 +105,5 @@ public class MonitorController {
         log.info("Green BPM: {}, Red BPM: {}, Final BPM: {}", bpmGreen, bpmRed, finalBpm);
         return bpmGreen + bpmRed;
     }
+
 }
