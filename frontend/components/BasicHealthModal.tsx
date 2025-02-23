@@ -35,9 +35,9 @@ export default function BasicHealthModal({modalVisible, setModalVisible}: any) {
     const updateTest = async () => {
         try {
             const response = await updateBasicHealth({
-                height: 150,
-                weight: 80,
-                age: 18,
+                height: 181,
+                weight: 81,
+                age: 22,
                 gender: 0,
             });
             if (response.data) {
@@ -139,7 +139,13 @@ export default function BasicHealthModal({modalVisible, setModalVisible}: any) {
                                             <Text>Gender</Text>
                                         </HStack>
                                         <HStack>
-                                            <Text>{basicHealth?.gender}</Text>
+                                            <Text>
+                                                {basicHealth?.gender === 0
+                                                    ? 'Male'
+                                                    : basicHealth?.gender === 1
+                                                        ? 'Female'
+                                                        : 'Secret'}
+                                            </Text>
                                         </HStack>
                                     </HStack>
                                 </Pressable>

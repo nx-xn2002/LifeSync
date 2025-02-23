@@ -12,6 +12,14 @@ declare namespace USER {
         age?: number;
         gender?: number;
     };
+    type DetectionRecord = {
+        systolicBp?: number;
+        diastolicBp?: number;
+        heartRate?: number;
+        bmi?: number;
+        createTime?: Date;
+        updateTime?: Date;
+    }
 }
 declare namespace API {
     type UserLoginRequest = {
@@ -24,8 +32,13 @@ declare namespace API {
         password?: string;
         email?: string;
     }
-    type  HeartRateRequest = {
-        images?: string[]
+    type  AnalyseRequest = {
+        images?: string[];
+        username?: string;
+        basicHealth?: USER.BasicHealth;
+    }
+    type  ListRecordRequest = {
+        username?: string;
     }
 
     type BaseResponseBasicHealth = {
@@ -46,11 +59,17 @@ declare namespace API {
         message?: string;
         description?: string;
     };
-    type BaseResponseDouble = {
+    type BaseResponseDetectionRecord = {
         code?: number;
-        data?: number;
+        data?: USER.DetectionRecord;
         message?: string;
         description?: string;
-    };
+    }
+    type BaseResponseDetectionRecordList = {
+        code?: number;
+        data?: USER.DetectionRecord[];
+        message?: string;
+        description?: string;
+    }
 }
 

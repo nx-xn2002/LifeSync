@@ -15,13 +15,15 @@ import lombok.NoArgsConstructor;
  * basic_health
  *
  * @author nx-xn2002
- * @date 2025-01-11
  */
 @TableName(value ="basic_health")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class BasicHealth {
+    public static final int FEMALE = 0;
+    public static final int MALE = 1;
+    public static final int SECRET = 2;
     /**
      * basic health id
      */
@@ -41,7 +43,7 @@ public class BasicHealth {
     /**
      * weight(m)
      */
-    private BigDecimal weight;
+    private Double weight;
 
     /**
      * age

@@ -4,22 +4,17 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import java.math.BigDecimal;
 import java.util.Date;
+import lombok.Data;
 
 /**
  * detection record
  *
  * @author nx-xn2002
- * @date 2025-01-11
  */
-@TableName(value = "detection_record")
+@TableName(value ="detection_record")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class DetectionRecord {
     /**
      * record id
@@ -46,6 +41,11 @@ public class DetectionRecord {
      * heart rate(BPM)
      */
     private Integer heartRate;
+
+    /**
+     * bmi
+     */
+    private Double bmi;
 
     /**
      * create time

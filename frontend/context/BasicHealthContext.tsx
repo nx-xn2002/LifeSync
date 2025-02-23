@@ -1,8 +1,5 @@
 import React, {createContext, ReactNode, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {View} from "react-native";
-import {HStack, Icon, Pressable, Text, VStack} from "@/components/ui";
-import AntDesign from "@expo/vector-icons/AntDesign";
 
 // 定义 BasicHealthContext 的值类型
 interface BasicHealthContextType {
@@ -23,7 +20,7 @@ export const BasicHealthProvider = ({children}: BasicHealthProviderProps) => {
         height: 0,
         weight: 0,
         age: 0,
-        gender: '',
+        gender: 0,
     });
 
     // 从 SecureStore 获取用户信息
@@ -41,11 +38,10 @@ export const BasicHealthProvider = ({children}: BasicHealthProviderProps) => {
     const storeBasicHealth = async (newBasicHealth: USER.BasicHealth) => {
         try {
             const updatedBasicHealth = {
-                ...basicHealth,
                 height: newBasicHealth?.height ?? basicHealth.height,
                 weight: newBasicHealth?.weight ?? basicHealth.weight,
                 age: newBasicHealth?.age ?? basicHealth.age,
-                gender: newBasicHealth?.gender || basicHealth.gender,
+                gender: newBasicHealth?.gender ?? basicHealth.gender,
             };
             await AsyncStorage.setItem('basicHealth', JSON.stringify(updatedBasicHealth));
             setBasicHealth(updatedBasicHealth);
@@ -61,7 +57,7 @@ export const BasicHealthProvider = ({children}: BasicHealthProviderProps) => {
             height: 0,
             weight: 0,
             age: 0,
-            gender: '',
+            gender: 0,
         });
     };
 

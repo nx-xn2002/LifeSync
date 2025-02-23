@@ -8,7 +8,7 @@
             <id property="healthId" column="health_id" jdbcType="BIGINT"/>
             <result property="userId" column="user_id" jdbcType="BIGINT"/>
             <result property="height" column="height" jdbcType="INTEGER"/>
-            <result property="weight" column="weight" jdbcType="DECIMAL"/>
+            <result property="weight" column="weight" jdbcType="DOUBLE"/>
             <result property="age" column="age" jdbcType="INTEGER"/>
             <result property="gender" column="gender" jdbcType="INTEGER"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>

@@ -10,6 +10,7 @@
             <result property="systolicBp" column="systolic_bp" jdbcType="SMALLINT"/>
             <result property="diastolicBp" column="diastolic_bp" jdbcType="SMALLINT"/>
             <result property="heartRate" column="heart_rate" jdbcType="SMALLINT"/>
+            <result property="bmi" column="bmi" jdbcType="DOUBLE"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
             <result property="isDeleted" column="is_deleted" jdbcType="TINYINT"/>
@@ -17,7 +18,7 @@
 
     <sql id="Base_Column_List">
         record_id,user_id,systolic_bp,
-        diastolic_bp,heart_rate,create_time,
-        update_time,is_deleted
+        diastolic_bp,heart_rate,bmi,
+        create_time,update_time,is_deleted
     </sql>
 </mapper>

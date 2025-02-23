@@ -26,7 +26,13 @@ export async function updateBasicHealth(body: USER.BasicHealth): Promise<API.Bas
 }
 
 /** 检测接口 POST /monitor/analyse */
-export async function analyse(body: API.HeartRateRequest): Promise<API.BaseResponseDouble> {
+export async function analyse(body: API.AnalyseRequest): Promise<API.BaseResponseDetectionRecord> {
     const response = await apiClient.post('/monitor/analyse', body);
+    return response.data;
+}
+
+/** 查询接口 POST /monitor/listDetectionRecord */
+export async function listDetectionRecord(body: API.ListRecordRequest): Promise<API.BaseResponseDetectionRecordList> {
+    const response = await apiClient.post('/monitor/listDetectionRecord', body);
     return response.data;
 }
